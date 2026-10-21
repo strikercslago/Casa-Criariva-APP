@@ -55,8 +55,8 @@ export function StudentPhotoPicker({ className, file, onChange, studentName }: S
 
   return (
     <section className={cn('rounded-md border border-border bg-background p-4', className)}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary/20 bg-primary/10 text-xl font-semibold text-primary">
+      <div className="flex items-start gap-3">
+        <div className="flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary/20 bg-primary/10 text-xl font-semibold text-primary">
           {previewUrl ? (
             <img alt="" className="h-full w-full object-cover" src={previewUrl} />
           ) : (
@@ -67,7 +67,7 @@ export function StudentPhotoPicker({ className, file, onChange, studentName }: S
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-foreground">Foto do aluno</p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            Opcional. Use JPEG, PNG ou WebP. A imagem sera otimizada antes do envio.
+            Opcional. JPEG, PNG ou WebP.
           </p>
           {error ? <p className="mt-2 text-sm text-danger">{error}</p> : null}
 

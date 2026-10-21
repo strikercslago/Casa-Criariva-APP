@@ -74,47 +74,19 @@ export function StudentsList({ students, onOpenStudent, onPrefetchStudent }: Stu
         </Table>
       </div>
 
-      <div className="grid gap-3 md:hidden">
+      <div className="grid gap-2 md:hidden">
         {students.map((student) => (
-          <article
-            className="rounded-md border border-border bg-surface p-4 shadow-subtle"
-            key={student.id}
-            onMouseEnter={() => onPrefetchStudent?.(student.id)}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <StudentAvatar size="md" student={student} />
-                <div className="min-w-0">
-                  <h2 className="truncate text-base font-semibold text-foreground">{student.full_name}</h2>
-                  {student.preferred_name ? (
-                    <p className="mt-1 text-sm text-muted-foreground">{student.preferred_name}</p>
-                  ) : null}
-                </div>
-              </div>
-              <StudentStatusBadge status={student.status} />
-            </div>
-
-            <dl className="mt-4 grid gap-2 text-sm">
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Matricula</dt>
-                <dd className="font-medium text-foreground">{formatStudentDate(student.enrollment_date)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Nascimento</dt>
-                <dd className="font-medium text-foreground">{formatStudentDate(student.birth_date)}</dd>
-              </div>
-            </dl>
-
-            <button
-              className="mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded border border-border bg-background px-3 text-sm font-medium"
-              onFocus={() => onPrefetchStudent?.(student.id)}
-              onClick={() => onOpenStudent(student.id)}
-              type="button"
-            >
-              Abrir
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </button>
-          </article>
+          <button key={student.id} type="button" aria-label={`Abrir ${student.full_name}`}
+            className="flex w-full items-center gap-3 rounded-md border border-border bg-surface p-4 text-left shadow-subtle transition-colors active:bg-muted"
+            onFocus={() => onPrefetchStudent?.(student.id)} onClick={() => onOpenStudent(student.id)}>
+            <StudentAvatar size="md" student={student} />
+            <span className="min-w-0 flex-1">
+              <span className="block break-words text-base font-semibold text-foreground">{student.full_name}</span>
+              {student.preferred_name ? <span className="mt-0.5 block text-sm text-muted-foreground">{student.preferred_name}</span> : null}
+              <span className="mt-2 inline-flex"><StudentStatusBadge status={student.status} /></span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+          </button>
         ))}
       </div>
     </>

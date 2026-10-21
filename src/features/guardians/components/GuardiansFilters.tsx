@@ -36,7 +36,7 @@ export function GuardiansFilters({ onRoleChange, onSearchChange, role, search }:
         </span>
       </label>
 
-      <div className="overflow-x-auto">
+      <div className="min-w-0">
         <Tabs>
           {roleFilters.map((filter) => (
             <TabButton

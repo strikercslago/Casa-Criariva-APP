@@ -225,11 +225,11 @@ export default function MaterialsPage() {
             </Button>
           </div>
         }
-        description="Materiais, estoque derivado por movimentacoes, compras e fornecedores."
+        description="Organize o estoque, as compras e os fornecedores."
         title="Materiais"
       />
 
-      <dl className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
+      <dl className="metric-grid">
         <SummaryItem label="Materiais cadastrados" value={String(summary?.materials_count ?? 0)} />
         <SummaryItem label="Estoque baixo" tone={(summary?.low_stock_count ?? 0) > 0 ? 'warning' : undefined} value={String(summary?.low_stock_count ?? 0)} />
         <SummaryItem label="Sem estoque" tone={(summary?.out_of_stock_count ?? 0) > 0 ? 'danger' : undefined} value={String(summary?.out_of_stock_count ?? 0)} />
@@ -759,7 +759,7 @@ function PurchaseDetailDrawer({ onClose, purchaseId }: { onClose: () => void; pu
 
 function SummaryItem({ label, tone, value }: { label: string; tone?: 'warning' | 'danger'; value: string }) {
   const toneClass = tone === 'danger' ? 'border-danger/30 bg-danger/5 text-danger' : tone === 'warning' ? 'border-warning/30 bg-warning/10 text-amber-700' : 'border-border bg-surface text-foreground'
-  return <div className={`rounded-md border p-3 shadow-subtle ${toneClass}`}><dt className="text-muted-foreground">{label}</dt><dd className="mt-1 text-2xl font-semibold">{value}</dd></div>
+  return <div className={`metric-tile ${toneClass}`}><dt className="text-muted-foreground">{label}</dt><dd className="mt-1 text-2xl font-semibold">{value}</dd></div>
 }
 
 function SummaryBox({ label, value }: { label: string; value: string }) {

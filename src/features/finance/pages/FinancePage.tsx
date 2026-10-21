@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
@@ -8,8 +8,7 @@ import { useToast } from '@/shared/components/feedback/Toast'
 import { PageHeader } from '@/shared/components/navigation/PageHeader'
 import { Button } from '@/shared/components/ui/Button'
 import { Select } from '@/shared/components/ui/FormControls'
-import { IconButton } from '@/shared/components/ui/IconButton'
-import { Input } from '@/shared/components/ui/Input'
+import { MonthNavigator } from '@/shared/components/ui/MonthNavigator'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { TabButton, Tabs } from '@/shared/components/ui/Tabs'
@@ -41,11 +40,8 @@ import type {
 } from '@/features/finance/types/financeTypes'
 import {
   addMonths,
-  formatReferenceMonth,
-  fromMonthInputValue,
   getCurrentReferenceMonth,
   getReferenceMonthEnd,
-  toMonthInputValue,
 } from '@/features/finance/utils/financeDates'
 import {
   cashFlowDirectionOptions,
@@ -190,41 +186,14 @@ export default function FinancePage() {
             </Button>
           </div>
         }
-        description="Entradas, saidas, obrigacoes e caixa consolidado sem duplicar recebimentos de mensalidades."
+        description="Controle entradas, saídas e contas do mês."
         title="Financeiro"
       />
 
       <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <CalendarDays className="h-4 w-4" aria-hidden />
-              Mes de referencia
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-foreground">{formatReferenceMonth(referenceMonth)}</h2>
-          </div>
+        <MonthNavigator value={referenceMonth} onChange={changeMonth} onPrevious={() => changeMonth(addMonths(referenceMonth, -1))} onNext={() => changeMonth(addMonths(referenceMonth, 1))} onToday={() => changeMonth(currentMonth)} />
 
-          <div className="flex flex-wrap items-end gap-2">
-            <IconButton label="Mes anterior" onClick={() => changeMonth(addMonths(referenceMonth, -1))}>
-              <ChevronLeft className="h-4 w-4" aria-hidden />
-            </IconButton>
-            <Button onClick={() => changeMonth(currentMonth)} variant="secondary">
-              Mes atual
-            </Button>
-            <IconButton label="Proximo mes" onClick={() => changeMonth(addMonths(referenceMonth, 1))}>
-              <ChevronRight className="h-4 w-4" aria-hidden />
-            </IconButton>
-            <Input
-              className="w-44"
-              label="Selecionar mes"
-              onChange={(event) => changeMonth(fromMonthInputValue(event.target.value))}
-              type="month"
-              value={toMonthInputValue(referenceMonth)}
-            />
-          </div>
-        </div>
-
-        <dl className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-5">
+        <dl className="metric-grid">
           <SummaryItem label="Entradas recebidas" tone="success" value={formatMoney(summary?.cash_in)} />
           <SummaryItem label="Saidas pagas" tone="danger" value={formatMoney(summary?.cash_out)} />
           <SummaryItem label="Resultado" tone={Number(summary?.result_amount ?? 0) < 0 ? 'danger' : 'success'} value={formatMoney(summary?.result_amount)} />
@@ -399,7 +368,7 @@ function SummaryItem({
         : 'border-border bg-background text-foreground'
 
   return (
-    <div className={`rounded border p-3 ${toneClass}`}>
+    <div className={`metric-tile ${toneClass}`}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold">{value}</dd>
     </div>

@@ -192,7 +192,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
           <SummaryItem label="Atualizado" value={formatStudentDate(student.updated_at.slice(0, 10))} />
         </dl>
 
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2">
           <Button
             leftIcon={<Pencil className="h-4 w-4" aria-hidden />}
             onClick={() => setIsEditingStudent(true)}
@@ -200,6 +200,8 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
           >
             Editar dados do aluno
           </Button>
+          <details><summary className="flex min-h-12 cursor-pointer items-center text-sm font-medium text-muted-foreground">Mais opções do aluno</summary>
+          <div className="grid gap-2 sm:grid-cols-2">
           {student.status === 'archived' ? (
             <Button
               isLoading={restoreMutation.isPending}
@@ -236,6 +238,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
           >
             Remover foto
           </Button>
+          </div></details>
         </div>
         <input
           accept="image/jpeg,image/png,image/webp"
@@ -263,7 +266,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
 
       {relations ? (
         <div className="grid gap-4">
-          <div className="overflow-x-auto">
+          <div className="min-w-0">
             <Tabs>
               {[
                 { label: 'Visao geral', value: 'overview' },

@@ -248,7 +248,7 @@ function SessionHeader({
         <SummaryItem label="Taxa de presenca" value={attendanceRate === null ? 'Nao registrada' : `${attendanceRate}%`} />
       </dl>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="flex flex-wrap gap-2">
         <Button
           disabled={isCancelled}
           leftIcon={<Check className="h-4 w-4" aria-hidden />}
@@ -314,14 +314,15 @@ function StudentAttendanceRow({
         {row.attendance_status ? <Badge tone="neutral">{attendanceStatusLabels[row.attendance_status]}</Badge> : <Badge tone="warning">Pendente</Badge>}
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2">
         {statusOptions.map((option) => (
           <button
             className={
               selectedStatus === option.value
-                ? 'h-10 rounded border border-primary bg-primary/10 px-3 text-sm font-semibold text-primary'
-                : 'h-10 rounded border border-border bg-surface px-3 text-sm font-medium text-foreground hover:bg-muted'
+                ? 'min-h-12 rounded border border-primary bg-primary/10 px-3 text-sm font-semibold text-primary'
+                : 'min-h-12 rounded border border-border bg-surface px-3 text-sm font-medium text-foreground hover:bg-muted'
             }
+            aria-pressed={selectedStatus === option.value}
             disabled={isDisabled}
             key={option.value}
             onClick={() => onUpdate({ status: option.value })}
@@ -332,6 +333,7 @@ function StudentAttendanceRow({
         ))}
       </div>
 
+      <details open={draft?.notes ? true : undefined}><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted-foreground">Observação opcional</summary>
       <Textarea
         disabled={isDisabled}
         label="Observacao"
@@ -339,6 +341,7 @@ function StudentAttendanceRow({
         placeholder="Opcional"
         value={draft?.notes ?? ''}
       />
+      </details>
     </article>
   )
 }

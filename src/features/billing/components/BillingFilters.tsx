@@ -32,7 +32,7 @@ export function BillingFilters({ onSearchChange, onStatusChange, search, status 
         </span>
       </label>
 
-      <div className="overflow-x-auto">
+      <div className="min-w-0">
         <Tabs>
           {billingStatusOptions.map((filter) => (
             <TabButton

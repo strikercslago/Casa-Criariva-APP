@@ -18,7 +18,7 @@ export function SearchInput({ className, label, id, ...props }: SearchInputProps
       />
       <input
         className={cn(
-          'h-10 w-full rounded border border-border bg-surface py-2 pl-9 pr-3 text-sm shadow-subtle placeholder:text-muted-foreground',
+          'h-12 sm:h-10 w-full rounded border border-border bg-surface py-2 pl-9 pr-3 text-base sm:text-sm shadow-subtle placeholder:text-muted-foreground',
           className,
         )}
         id={inputId}

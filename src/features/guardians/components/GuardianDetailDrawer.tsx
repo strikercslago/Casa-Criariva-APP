@@ -144,7 +144,7 @@ export function GuardianDetailDrawer({ guardianId, onClose }: GuardianDetailDraw
               </div>
             </header>
 
-            <div className="overflow-x-auto">
+            <div className="min-w-0">
               <Tabs>
                 {[
                   { label: 'Visao geral', value: 'overview' },

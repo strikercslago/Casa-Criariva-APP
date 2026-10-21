@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, Wand2 } from 'lucide-react'
+import { RefreshCw, Wand2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
 import { EmptyState } from '@/shared/components/feedback/EmptyState'
@@ -6,8 +6,7 @@ import { ErrorState } from '@/shared/components/feedback/ErrorState'
 import { useToast } from '@/shared/components/feedback/Toast'
 import { PageHeader } from '@/shared/components/navigation/PageHeader'
 import { Button } from '@/shared/components/ui/Button'
-import { IconButton } from '@/shared/components/ui/IconButton'
-import { Input } from '@/shared/components/ui/Input'
+import { MonthNavigator } from '@/shared/components/ui/MonthNavigator'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { BillingFeeList } from '@/features/billing/components/BillingFeeList'
 import { BillingFilters } from '@/features/billing/components/BillingFilters'
@@ -119,41 +118,14 @@ export default function BillingPage() {
             </Button>
           </div>
         }
-        description="Gere cobrancas mensais, registre pagamentos parciais, acompanhe saldos e trate reversoes com historico."
+        description="Acompanhe cobranças e registre pagamentos."
         title="Mensalidades"
       />
 
       <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <CalendarDays className="h-4 w-4" aria-hidden />
-              Mes de referencia
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-foreground">{formatReferenceMonth(referenceMonth)}</h2>
-          </div>
+        <MonthNavigator value={referenceMonth} onChange={changeMonth} onPrevious={() => changeMonth(addMonths(referenceMonth, -1))} onNext={() => changeMonth(addMonths(referenceMonth, 1))} onToday={() => changeMonth(currentMonth)} />
 
-          <div className="flex flex-wrap items-end gap-2">
-            <IconButton label="Mes anterior" onClick={() => changeMonth(addMonths(referenceMonth, -1))}>
-              <ChevronLeft className="h-4 w-4" aria-hidden />
-            </IconButton>
-            <Button onClick={() => changeMonth(currentMonth)} variant="secondary">
-              Mes atual
-            </Button>
-            <IconButton label="Proximo mes" onClick={() => changeMonth(addMonths(referenceMonth, 1))}>
-              <ChevronRight className="h-4 w-4" aria-hidden />
-            </IconButton>
-            <Input
-              className="w-44"
-              label="Selecionar mes"
-              onChange={(event) => changeMonth(`${event.target.value}-01`)}
-              type="month"
-              value={referenceMonth.slice(0, 7)}
-            />
-          </div>
-        </div>
-
-        <dl className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
+        <dl className="metric-grid">
           <SummaryItem label="Previsto" value={formatMoney(summary?.expected_amount)} />
           <SummaryItem label="Recebido" value={formatMoney(summary?.received_amount)} />
           <SummaryItem label="Pendente" value={formatMoney(summary?.pending_amount)} />
@@ -225,7 +197,7 @@ export default function BillingPage() {
 
 function SummaryItem({ label, tone, value }: { label: string; tone?: 'danger'; value: string }) {
   return (
-    <div className={tone === 'danger' ? 'rounded border border-danger/30 bg-danger/5 p-3' : 'rounded border border-border bg-background p-3'}>
+    <div className={tone === 'danger' ? 'metric-tile border-danger/30 bg-danger/5' : 'metric-tile'}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className={tone === 'danger' ? 'mt-1 text-2xl font-semibold text-danger' : 'mt-1 text-2xl font-semibold text-foreground'}>{value}</dd>
     </div>

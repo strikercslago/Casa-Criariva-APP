@@ -140,7 +140,8 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
   return (
     <Overlay isOpen={isOpen} onClose={requestClose} side="wide" title="Matricula completa">
       <div className="grid gap-5">
-        <ol className="grid grid-cols-5 gap-1 text-xs font-semibold text-muted-foreground">
+        <div className="grid gap-2 sm:hidden"><p className="text-sm font-semibold">Etapa {step + 1} de {steps.length} · {steps[step]}</p><progress className="h-2 w-full accent-primary" value={step + 1} max={steps.length} aria-label="Progresso da matrícula" /></div>
+        <ol className="hidden sm:grid grid-cols-5 gap-1 text-xs font-semibold text-muted-foreground">
           {steps.map((label, index) => (
             <li
               className={index === step ? 'rounded bg-primary px-2 py-2 text-center text-primary-foreground' : 'rounded bg-muted px-2 py-2 text-center'}
@@ -151,7 +152,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
           ))}
         </ol>
 
-        <div className="min-h-[420px]">
+        <div className="sm:min-h-[420px]">
           {step === 0 ? <StudentStep form={form} photoFile={photoFile} setPhotoFile={setPhotoFile} /> : null}
           {step === 1 ? (
             <GuardiansStep
@@ -188,7 +189,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
           </div>
         ) : null}
 
-        <footer className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <footer className="sticky bottom-0 z-10 flex flex-col-reverse gap-2 border-t border-border bg-surface py-3 sm:flex-row sm:items-center sm:justify-between">
           <Button onClick={requestClose} type="button" variant="secondary">
             Cancelar
           </Button>

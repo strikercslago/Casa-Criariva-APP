@@ -22,7 +22,7 @@ type EventRegistrationListProps = {
 
 export function EventRegistrationList({ onCancel, onConfirm, onPay, registrations }: EventRegistrationListProps) {
   return (
-    <div className="grid gap-3">
+    <div className="responsive-records grid gap-3">
       <div className="hidden rounded-md border border-border bg-surface shadow-subtle xl:block">
         <div className="grid grid-cols-[minmax(220px,1.2fr)_180px_130px_130px_130px_210px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Participante</span>
@@ -38,7 +38,7 @@ export function EventRegistrationList({ onCancel, onConfirm, onPay, registration
             key={registration.registration_id}
           >
             <div className="min-w-0">
-              <h3 className="truncate font-semibold text-foreground">{registration.participant_name}</h3>
+              <h3 className="break-words font-semibold text-foreground">{registration.participant_name}</h3>
               <p className="mt-1 truncate text-sm text-muted-foreground">{getSessionsLabel(registration.selected_sessions)}</p>
             </div>
             <div className="min-w-0 text-sm text-muted-foreground">
@@ -61,13 +61,13 @@ export function EventRegistrationList({ onCancel, onConfirm, onPay, registration
           <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={registration.registration_id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="truncate font-semibold text-foreground">{registration.participant_name}</h3>
+                <h3 className="break-words font-semibold text-foreground">{registration.participant_name}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{registration.guardian_name ?? 'Sem responsavel'}</p>
               </div>
               <Badge tone={getRegistrationStatusTone(registration.status)}>{getRegistrationStatusLabel(registration.status)}</Badge>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{getSessionsLabel(registration.selected_sessions)}</p>
-            <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">
+            <dl className="mt-4 record-values">
               <Summary label="Financeiro" value={getFinanceStatusLabel(registration.finance_status)} />
               <Summary label="Valor" value={formatMoney(registration.final_amount)} />
               <Summary label="Saldo" value={formatMoney(registration.balance)} />
@@ -128,7 +128,7 @@ function Summary({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded border border-border bg-background p-2">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-1 truncate font-semibold text-foreground">{value}</dd>
+      <dd className="mt-1 font-semibold text-foreground">{value}</dd>
     </div>
   )
 }

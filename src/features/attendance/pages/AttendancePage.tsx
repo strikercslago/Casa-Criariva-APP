@@ -82,7 +82,7 @@ export default function AttendancePage() {
   const today = useMemo(() => toIsoDate(new Date()), [])
   const [searchParams] = useSearchParams()
   const requestedSessionId = searchParams.get('session')
-  const [selectedDate, setSelectedDate] = useState(today)
+  const [selectedDate, setSelectedDate] = useState(() => { const date = searchParams.get('date'); return date && /^\d{4}-\d{2}-\d{2}$/.test(date) && toIsoDate(parseIsoDate(date)) === date ? date : today })
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(requestedSessionId)
   const [drafts, setDrafts] = useState<AttendanceDrafts>({})
   const [savedSnapshot, setSavedSnapshot] = useState(createAttendanceSnapshot({}))
@@ -210,11 +210,13 @@ export default function AttendancePage() {
   return (
     <div className="space-y-5 pb-20 lg:pb-0">
       <PageHeader
+        compact
         actions={
           <Button
             isLoading={sessionsQuery.isFetching || attendanceQuery.isFetching}
             leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />}
             onClick={() => {
+              if (!confirmPendingChanges()) return
               void sessionsQuery.refetch()
               void attendanceQuery.refetch()
             }}
@@ -223,7 +225,7 @@ export default function AttendancePage() {
             Atualizar
           </Button>
         }
-        description="Registre presencas por aula, com alunos esperados pela matricula valida do dia."
+        description="Escolha a turma e registre a presença de cada aluno."
         title="Frequencia"
       />
 
@@ -262,7 +264,7 @@ export default function AttendancePage() {
           </div>
         </div>
 
-        <dl className="grid gap-2 text-sm sm:grid-cols-3">
+        <dl className="hidden grid-cols-3 gap-2 text-sm sm:grid">
           <Metric label="Aulas do dia" value={String(sessions.length)} />
           <Metric label="Pendentes" value={String(sessions.filter((session) => session.attendance_state === 'pending').length)} />
           <Metric label="Registradas" value={String(sessions.filter((session) => session.attendance_state === 'recorded').length)} />
@@ -282,15 +284,21 @@ export default function AttendancePage() {
       {!sessionsQuery.isLoading && !sessionsQuery.isError && sessions.length === 0 ? (
         <EmptyState
           title="Nenhuma aula neste dia."
-          description="A frequencia aparece somente quando existe aula recorrente materializada para a data selecionada."
+          description="Escolha outro dia ou confira os horários das turmas."
         />
       ) : null}
 
       {sessions.length > 0 ? (
         <div className="grid gap-4 xl:grid-cols-[minmax(260px,360px)_1fr]">
-          <aside className="grid content-start gap-3">
+          <label className="grid gap-2 text-sm font-medium xl:hidden">
+            Turma da chamada
+            <select className="h-12 w-full rounded border border-border bg-surface px-3" value={selectedSessionId ?? ''} onChange={(event) => selectSession(event.target.value)}>
+              {sessions.map((session) => <option key={session.session_id} value={session.session_id}>{session.start_time.slice(0, 5)} · {session.class_name}</option>)}
+            </select>
+          </label>
+          <aside className="hidden content-start gap-3 xl:grid">
             <h2 className="text-sm font-semibold text-muted-foreground">Turmas com aula</h2>
-            <div className="grid gap-2">
+            <div className="grid min-w-0 gap-2 pb-2">
               {sessions.map((session) => (
                 <SessionCard
                   isSelected={session.session_id === selectedSessionId}
@@ -302,7 +310,7 @@ export default function AttendancePage() {
             </div>
           </aside>
 
-          <main className="min-w-0">
+          <div className="min-w-0">
             {attendanceQuery.isLoading && selectedSessionId ? <AttendanceSkeleton /> : null}
 
             {attendanceQuery.isError ? (
@@ -335,7 +343,7 @@ export default function AttendancePage() {
                     {rows.map((row) => (
                       <StudentAttendanceCard
                         draft={drafts[row.student_id]}
-                        isDisabled={isCancelled}
+                        isDisabled={isCancelled || saveMutation.isPending}
                         key={row.student_id}
                         onNotesChange={(notes) => updateNotes(row.student_id, notes)}
                         onStatusChange={(status) => updateStatus(row.student_id, status)}
@@ -354,7 +362,7 @@ export default function AttendancePage() {
                 />
               </section>
             ) : null}
-          </main>
+          </div>
         </div>
       ) : null}
     </div>
@@ -375,10 +383,11 @@ function SessionCard({
   return (
     <button
       className={cn(
-        'grid gap-3 rounded-md border bg-surface p-4 text-left shadow-subtle transition',
+        'grid w-64 shrink-0 gap-3 rounded-md border bg-surface p-4 xl:w-auto text-left shadow-subtle transition',
         'hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/25',
         isSelected ? 'border-primary bg-primary/5' : 'border-border',
       )}
+      aria-pressed={isSelected}
       onClick={onSelect}
       type="button"
     >
@@ -450,7 +459,7 @@ function AttendanceSummaryPanel({
         </Button>
       </div>
 
-      <dl className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
         <Metric label="Presentes" tone="success" value={String(summary.present)} />
         <Metric label="Faltas" tone="danger" value={String(summary.absent)} />
         <Metric label="Justificadas" tone="warning" value={String(summary.excused)} />
@@ -488,7 +497,7 @@ function StudentAttendanceCard({
             }}
           />
           <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-foreground">{row.student_name}</h3>
+            <h3 className="break-words text-base font-semibold text-foreground">{row.student_name}</h3>
             <p className="truncate text-sm text-muted-foreground">
               {row.preferred_name ? `Nome preferido: ${row.preferred_name}` : 'Aluno esperado'}
             </p>
@@ -499,7 +508,7 @@ function StudentAttendanceCard({
         </Badge>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2">
         {statusOptions.map((option) => (
           <button
             aria-pressed={selectedStatus === option.value}
@@ -520,6 +529,8 @@ function StudentAttendanceCard({
         ))}
       </div>
 
+      <details open={draft?.notes ? true : undefined}>
+        <summary className="flex min-h-12 cursor-pointer items-center text-sm font-medium text-muted-foreground">Observação opcional</summary>
       <label className="grid gap-1.5 text-sm font-medium text-foreground">
         <span>Observacao</span>
         <input
@@ -530,6 +541,7 @@ function StudentAttendanceCard({
           value={draft?.notes ?? ''}
         />
       </label>
+      </details>
     </article>
   )
 }
@@ -548,12 +560,12 @@ function SaveBar({
   summary: ReturnType<typeof getAttendanceSummary>
 }) {
   return (
-    <footer className="sticky bottom-3 z-20 rounded-md border border-border bg-surface/95 p-3 shadow-elevated backdrop-blur lg:static lg:shadow-subtle">
+    <footer className="attendance-save-bar sticky bottom-3 z-20 rounded-md border border-border bg-surface/95 p-3 shadow-elevated backdrop-blur lg:static lg:shadow-subtle">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {hasUnsavedChanges
             ? `${summary.recorded} registros prontos para salvar.`
-            : 'Chamada sincronizada com os registros salvos.'}
+            : summary.unrecorded > 0 ? `${summary.unrecorded} alunos ainda sem registro.` : 'Chamada salva.'}
         </p>
         <Button
           className="w-full sm:w-auto"
@@ -586,7 +598,7 @@ function Metric({
   }[tone]
 
   return (
-    <div className="rounded border border-border bg-background p-3">
+    <div className="rounded-xl bg-background p-2.5">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className={cn('mt-1 text-2xl font-semibold', toneClassName)}>{value}</dd>
     </div>

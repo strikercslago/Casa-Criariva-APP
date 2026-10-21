@@ -10,7 +10,7 @@ export function IconButton({ className, label, children, ...props }: IconButtonP
     <button
       aria-label={label}
       className={cn(
-        'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded border border-border bg-surface text-foreground shadow-subtle transition-colors hover:bg-muted active:bg-muted/80 disabled:pointer-events-none disabled:opacity-60',
+        'ui-icon-button inline-flex h-12 w-12 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded border border-border bg-surface text-foreground shadow-subtle transition-colors hover:bg-muted active:bg-muted/80 disabled:pointer-events-none disabled:opacity-60',
         className,
       )}
       title={label}

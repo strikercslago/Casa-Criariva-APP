@@ -25,8 +25,8 @@ const config = {
       },
       borderRadius: {
         sm: '4px',
-        DEFAULT: '6px',
-        md: '8px',
+        DEFAULT: '12px',
+        md: '16px',
       },
     },
   },

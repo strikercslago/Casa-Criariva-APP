@@ -82,8 +82,9 @@ export default function StudentsPage() {
   return (
     <div className="space-y-5">
       <PageHeader
+        compact
         title="Alunos"
-        description="Cadastre, acompanhe e organize alunos sem misturar responsaveis, turmas ou financeiro."
+        description="Encontre um aluno e acompanhe sua trajetória."
         actions={
           <Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setIsCreateOpen(true)}>
             Novo aluno
@@ -91,10 +92,10 @@ export default function StudentsPage() {
         }
       />
 
-      <section className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-        <div className="rounded-md border border-border bg-surface p-4 shadow-subtle">
-          <p className="text-sm text-muted-foreground">Total no filtro</p>
-          <p className="mt-1 text-3xl font-semibold text-foreground">{totalCount}</p>
+      <section className="list-toolbar">
+        <div className="list-count">
+          <p className="whitespace-nowrap text-xl font-bold tabular-nums text-foreground">{studentsQuery.isFetching ? "—" : totalCount}</p>
+          <p className="text-sm text-muted-foreground">alunos encontrados</p>
         </div>
 
         <Button

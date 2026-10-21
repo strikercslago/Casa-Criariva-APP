@@ -18,8 +18,8 @@ type FinanceCashFlowListProps = {
 
 export function FinanceCashFlowList({ movements, onReverseSettlement }: FinanceCashFlowListProps) {
   return (
-    <div className="grid gap-3">
-      <div className="hidden rounded-md border border-border bg-surface shadow-subtle lg:block">
+    <div className="responsive-records grid gap-3">
+      <div className="records-table rounded-md border border-border bg-surface shadow-subtle">
         <div className="grid grid-cols-[110px_minmax(220px,1.4fr)_150px_140px_140px_120px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Fluxo</span>
           <span>Descricao</span>
@@ -35,7 +35,7 @@ export function FinanceCashFlowList({ movements, onReverseSettlement }: FinanceC
           >
             <Badge tone={getDirectionTone(movement.direction)}>{getDirectionLabel(movement.direction)}</Badge>
             <div className="min-w-0">
-              <p className="truncate font-semibold text-foreground">{movement.description}</p>
+              <p className="break-words font-semibold text-foreground">{movement.description}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {movement.category_name ?? 'Sem categoria'} - {paymentMethodLabelMap[movement.payment_method]}
                 {movement.cash_account_name ? ` - ${movement.cash_account_name}` : ''}
@@ -61,17 +61,17 @@ export function FinanceCashFlowList({ movements, onReverseSettlement }: FinanceC
         ))}
       </div>
 
-      <div className="grid gap-3 lg:hidden">
+      <div className="records-cards gap-3">
         {movements.map((movement) => (
           <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={movement.movement_id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="truncate font-semibold text-foreground">{movement.description}</h2>
+                <h2 className="break-words font-semibold text-foreground">{movement.description}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{formatPaymentDateTime(movement.occurred_at)}</p>
               </div>
               <Badge tone={getDirectionTone(movement.direction)}>{getDirectionLabel(movement.direction)}</Badge>
             </div>
-            <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">
+            <dl className="mt-4 record-values">
               <Summary label="Origem" value={getSourceLabel(movement.source_type)} />
               <Summary label="Forma" value={paymentMethodLabelMap[movement.payment_method]} />
               <Summary label="Valor" value={formatMoney(movement.amount)} />
@@ -92,7 +92,7 @@ function Summary({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded border border-border bg-background p-2">
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-1 truncate font-semibold text-foreground">{value}</dd>
+      <dd className="mt-1 font-semibold text-foreground">{value}</dd>
     </div>
   )
 }

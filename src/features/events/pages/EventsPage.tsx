@@ -259,7 +259,7 @@ export default function EventsPage() {
             </div>
           </div>
 
-          <dl className="grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-5">
+          <dl className="metric-grid">
             <SummaryItem label="Receita prevista" value={formatMoney(summary?.expected_revenue)} />
             <SummaryItem label="Recebido" tone="success" value={formatMoney(summary?.received_amount)} />
             <SummaryItem label="A receber" value={formatMoney(summary?.receivable_amount)} />
@@ -364,7 +364,7 @@ function SummaryItem({
         : 'border-border bg-background text-foreground'
 
   return (
-    <div className={`rounded border p-3 ${toneClass}`}>
+    <div className={`metric-tile ${toneClass}`}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold">{value}</dd>
     </div>

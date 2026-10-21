@@ -28,12 +28,12 @@ export function StudentFilters({
         />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto" role="tablist" aria-label="Filtro de status">
+      <div className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap" role="tablist" aria-label="Filtro de status">
         {studentStatusOptions.map((option) => (
           <button
             aria-selected={status === option.value}
             className={cn(
-              'min-h-10 whitespace-nowrap rounded border px-3 text-sm font-medium transition-colors',
+              'min-h-12 min-w-0 rounded border px-3 text-sm font-medium transition-colors',
               status === option.value
                 ? 'border-primary bg-primary text-primary-foreground'
                 : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground',

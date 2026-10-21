@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   test: {
-    environment: 'jsdom',
+    environment: './tests/jsdom-fetch-environment.ts',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: true,

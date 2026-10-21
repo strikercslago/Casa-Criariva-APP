@@ -92,7 +92,7 @@ export function GuardiansList({ guardians, onOpenGuardian, onPrefetchGuardian }:
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="truncate text-base font-semibold text-foreground">{guardian.full_name}</h2>
+                <h2 className="break-words text-base font-semibold text-foreground">{guardian.full_name}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {getGuardianContactLabel(guardian.phone, guardian.email)}
                 </p>

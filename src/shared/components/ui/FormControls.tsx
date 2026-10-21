@@ -17,7 +17,7 @@ export const Textarea = forwardRef<
       <span>{label}</span>
       <textarea
         className={cn(
-          'min-h-24 rounded border border-border bg-surface px-3 py-2 text-sm shadow-subtle placeholder:text-muted-foreground',
+          'min-h-24 rounded border border-border bg-surface px-3 py-2 text-base sm:text-sm shadow-subtle placeholder:text-muted-foreground',
           className,
         )}
         id={inputId}
@@ -38,7 +38,7 @@ export const Select = forwardRef<
     <label className="grid gap-1.5 text-sm font-medium text-foreground" htmlFor={inputId}>
       <span>{label}</span>
       <select
-        className={cn('h-10 rounded border border-border bg-surface px-3 text-sm shadow-subtle', className)}
+        className={cn('h-12 sm:h-10 rounded border border-border bg-surface px-3 text-base sm:text-sm shadow-subtle', className)}
         id={inputId}
         ref={ref}
         {...props}

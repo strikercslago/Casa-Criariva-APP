@@ -25,8 +25,8 @@ const variantClasses: Record<ButtonVariant, string> = {
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3 text-sm',
-  md: 'h-10 px-4 text-sm',
+  sm: 'min-h-12 px-3 text-sm sm:min-h-9',
+  md: 'min-h-12 px-4 py-2 text-sm sm:min-h-10',
 }
 
 export function Button({
@@ -43,7 +43,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex shrink-0 items-center justify-center gap-2 rounded border font-medium shadow-subtle transition-colors',
+        'ui-button inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded border font-medium shadow-subtle transition-colors',
         'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60',
         sizeClasses[size],
         variantClasses[variant],
@@ -54,7 +54,7 @@ export function Button({
       {...props}
     >
       {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : leftIcon}
-      <span>{children}</span>
+      <span className="min-w-0">{children}</span>
       {rightIcon}
     </button>
   )

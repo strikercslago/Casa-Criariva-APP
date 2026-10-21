@@ -50,7 +50,7 @@ export function ClassesFilters({
         </span>
       </label>
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-        <div className="overflow-x-auto">
+        <div className="min-w-0">
           <Tabs>
             {statusFilters.map((filter) => (
               <TabButton
@@ -64,7 +64,7 @@ export function ClassesFilters({
             ))}
           </Tabs>
         </div>
-        <div className="overflow-x-auto">
+        <div className="min-w-0">
           <Tabs>
             {capacityFilters.map((filter) => (
               <TabButton

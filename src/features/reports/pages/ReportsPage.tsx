@@ -74,7 +74,7 @@ export default function ReportsPage() {
       />
 
       <Card className="print:shadow-none">
-        <div className="grid gap-4 xl:grid-cols-[auto_1fr] xl:items-end">
+        <div className="grid gap-4">
           <Tabs>
             {reportTabs.map((tab) => <TabButton isActive={type === tab.value} key={tab.value} onClick={() => updateType(tab.value)}>{tab.label}</TabButton>)}
           </Tabs>
@@ -172,7 +172,7 @@ function FinancialReportSection({ period }: { period: ReportsPeriod }) {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="metric-grid">
         <Metric label="Entradas recebidas" value={formatMoney(report.cash_in)} helper={getComparisonLabel(report.cash_in, report.previous_cash_in)} />
         <Metric label="Saidas pagas" value={formatMoney(report.cash_out)} helper={getComparisonLabel(report.cash_out, report.previous_cash_out)} />
         <Metric label="Resultado de caixa" value={formatMoney(report.result_amount)} helper={getComparisonLabel(report.result_amount, report.previous_result_amount)} />
@@ -206,7 +206,7 @@ function StudentsReportSection({ period }: { period: ReportsPeriod }) {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-4"><Metric label="Ativos" value={report.active_students_count} /><Metric label="Entradas" value={report.new_students_count} /><Metric label="Saidas" value={report.archived_students_count} /><Metric label="Variacao" value={signedNumber(report.net_students_change)} /></div>
+      <div className="metric-grid"><Metric label="Ativos" value={report.active_students_count} /><Metric label="Entradas" value={report.new_students_count} /><Metric label="Saidas" value={report.archived_students_count} /><Metric label="Variacao" value={signedNumber(report.net_students_change)} /></div>
       <div className="grid gap-4 xl:grid-cols-2">
         <Card><h2 className="font-semibold text-foreground">Distribuicao por turma</h2><SimpleRows rows={report.class_distribution} render={(row) => <RowLine key={row.class_name} label={row.class_name} value={`${row.active_students} alunos`} />} /></Card>
         <Card><h2 className="font-semibold text-foreground">Faixas etarias</h2><SimpleRows rows={report.age_bands} render={(row) => <RowLine key={row.age_band} label={row.age_band} value={row.student_count} />} /></Card>
@@ -231,7 +231,7 @@ function ClassesReportSection() {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-5"><Metric label="Turmas ativas" value={report.active_classes_count} /><Metric label="Alunos em turmas" value={report.class_active_enrollments} /><Metric label="Capacidade" value={report.class_total_capacity} /><Metric label="Ocupacao" value={formatPercent(report.class_occupancy_rate)} /><Metric label="Vagas" value={report.available_spots} /></div>
+      <div className="metric-grid"><Metric label="Turmas ativas" value={report.active_classes_count} /><Metric label="Alunos em turmas" value={report.class_active_enrollments} /><Metric label="Capacidade" value={report.class_total_capacity} /><Metric label="Ocupacao" value={formatPercent(report.class_occupancy_rate)} /><Metric label="Vagas" value={report.available_spots} /></div>
       <Card><h2 className="font-semibold text-foreground">Turmas</h2><SimpleRows rows={report.classes} render={(row) => <RowLine key={row.class_id} label={row.name} value={`${row.active_enrollments}/${row.capacity ?? '-'} - ${formatPercent(row.occupancy_rate)}`} />} /></Card>
     </section>
   )
@@ -254,7 +254,7 @@ function AttendanceReportSection({ period }: { period: ReportsPeriod }) {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-5"><Metric label="Taxa geral" value={formatPercent(report.attendance_rate)} /><Metric label="Presencas" value={report.present_count} /><Metric label="Faltas" value={report.absent_count} /><Metric label="Justificadas" value={report.excused_count} /><Metric label="Aulas sem registro" value={report.pending_sessions_count} /></div>
+      <div className="metric-grid"><Metric label="Taxa geral" value={formatPercent(report.attendance_rate)} /><Metric label="Presencas" value={report.present_count} /><Metric label="Faltas" value={report.absent_count} /><Metric label="Justificadas" value={report.excused_count} /><Metric label="Aulas sem registro" value={report.pending_sessions_count} /></div>
       <div className="grid gap-4 xl:grid-cols-2">
         <Card><h2 className="font-semibold text-foreground">Por turma</h2><SimpleRows rows={report.by_class} render={(row) => <RowLine key={row.class_id} label={row.class_name} value={`${formatPercent(row.attendance_rate)} - ${row.pending_sessions_count} pendentes`} />} /></Card>
         <Card><h2 className="font-semibold text-foreground">Por aluno</h2><SimpleRows rows={report.by_student.slice(0, 25)} render={(row) => <RowLine key={row.student_id} label={row.student_name} value={`${row.present_count}/${row.recorded_classes} - ${formatPercent(row.attendance_rate)}`} to={`/alunos?aluno=${row.student_id}`} />} /></Card>
@@ -280,7 +280,7 @@ function EventsReportSection({ period }: { period: ReportsPeriod }) {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-5"><Metric label="Eventos" value={report.events_count} /><Metric label="Inscricoes" value={report.registrations_count} /><Metric label="Confirmados" value={report.confirmed_count} /><Metric label="Recebido" value={formatMoney(report.received_amount)} /><Metric label="A receber" value={formatMoney(report.receivable_amount)} /></div>
+      <div className="metric-grid"><Metric label="Eventos" value={report.events_count} /><Metric label="Inscricoes" value={report.registrations_count} /><Metric label="Confirmados" value={report.confirmed_count} /><Metric label="Recebido" value={formatMoney(report.received_amount)} /><Metric label="A receber" value={formatMoney(report.receivable_amount)} /></div>
       <Card><h2 className="font-semibold text-foreground">Eventos no periodo</h2><SimpleRows rows={report.events} render={(row) => <RowLine key={row.event_id} label={`${row.name} - ${formatDate(row.first_session_date)}`} value={`${row.confirmed_count}/${row.capacity ?? '-'} - ${formatMoney(row.received_amount)}`} to="/eventos" />} /></Card>
     </section>
   )
@@ -303,7 +303,7 @@ function InventoryReportSection({ period }: { period: ReportsPeriod }) {
   return (
     <section className="space-y-4">
       <ReportActions isFetching={query.isFetching} onCsv={csv} onRefresh={() => void query.refetch()} />
-      <div className="grid gap-3 sm:grid-cols-5"><Metric label="Materiais ativos" value={report.active_materials_count} /><Metric label="Estoque baixo" value={report.low_stock_count} /><Metric label="Sem estoque" value={report.out_of_stock_count} /><Metric label="Consumo" value={report.consumption_quantity} /><Metric label="Compras" value={formatMoney(report.purchases_amount)} /></div>
+      <div className="metric-grid"><Metric label="Materiais ativos" value={report.active_materials_count} /><Metric label="Estoque baixo" value={report.low_stock_count} /><Metric label="Sem estoque" value={report.out_of_stock_count} /><Metric label="Consumo" value={report.consumption_quantity} /><Metric label="Compras" value={formatMoney(report.purchases_amount)} /></div>
       <div className="grid gap-4 xl:grid-cols-2">
         <Card><h2 className="font-semibold text-foreground">Criticos</h2><SimpleRows rows={report.low_stock_materials} render={(row) => <RowLine key={row.material_id} label={row.name} value={`${row.current_stock} / minimo ${row.minimum_stock}`} to="/materiais" />} /></Card>
         <Card><h2 className="font-semibold text-foreground">Movimentos no periodo</h2><SimpleRows rows={report.movement_rows.slice(0, 25)} render={(row, index) => <RowLine key={`${row.date}-${row.material_name}-${index}`} label={`${formatDate(row.date)} - ${row.material_name}`} value={`${row.movement_type}: ${row.quantity}`} />} /></Card>
@@ -322,11 +322,11 @@ function ReportActions({ isFetching, onCsv, onRefresh }: { isFetching: boolean; 
 }
 
 function SummaryCard({ title, values }: { title: string; values: Array<[string, ReactNode]> }) {
-  return <Card><h2 className="font-semibold text-foreground">{title}</h2><dl className="mt-4 grid gap-2 sm:grid-cols-2">{values.map(([label, value]) => <Metric key={label} label={label} value={value} />)}</dl></Card>
+  return <Card><h2 className="font-semibold text-foreground">{title}</h2><dl className="mt-4 metric-grid">{values.map(([label, value]) => <Metric key={label} label={label} value={value} />)}</dl></Card>
 }
 
 function Metric({ helper, label, value }: { helper?: string; label: string; value: ReactNode }) {
-  return <div className="rounded border border-border bg-background p-3"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 text-lg font-semibold text-foreground">{value}</dd>{helper ? <p className="mt-1 text-xs text-muted-foreground">{helper}</p> : null}</div>
+  return <div className="metric-tile"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 text-lg font-semibold text-foreground">{value}</dd>{helper ? <p className="mt-1 text-xs text-muted-foreground">{helper}</p> : null}</div>
 }
 
 function RowLine({ label, to, value }: { label: string; to?: string; value: ReactNode }) {

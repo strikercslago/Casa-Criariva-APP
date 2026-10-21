@@ -83,10 +83,10 @@ export default function GuardiansPage() {
         title="Responsaveis"
       />
 
-      <section className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-        <div className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="list-toolbar">
+        <div className="list-count">
           <p className="text-sm text-muted-foreground">Encontrados</p>
-          <p className="mt-1 text-3xl font-semibold text-foreground">{totalCount}</p>
+          <p className="whitespace-nowrap text-xl font-bold tabular-nums text-foreground">{totalCount}</p>
         </div>
         <Button
           isLoading={guardiansQuery.isFetching}

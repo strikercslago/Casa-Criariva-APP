@@ -11,6 +11,7 @@ import { ErrorState } from '@/shared/components/feedback/ErrorState'
 import { RouteSkeleton } from '@/shared/components/feedback/RouteSkeleton'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
+import { PageHeader } from '@/shared/components/navigation/PageHeader'
 import { Input } from '@/shared/components/ui/Input'
 import { Table, Td, Th } from '@/shared/components/ui/Table'
 import {
@@ -43,16 +44,13 @@ export default function SettingsPage() {
 
   return (
     <div className="grid gap-5">
-      <div>
-        <p className="text-sm font-medium text-muted-foreground">Administracao</p>
-        <h1 className="text-2xl font-semibold text-foreground">Configuracoes</h1>
-      </div>
+      <PageHeader title="Configuracoes" description="Preferências, equipe e segurança da Casa Criativa." />
 
-      <nav className="flex flex-wrap gap-2" aria-label="Configuracoes">
+      <nav className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Configuracoes">
         {visibleTabs.map((tab) => (
           <Link
             className={[
-              'rounded border px-3 py-2 text-sm font-medium transition-colors',
+              'flex min-h-12 items-center justify-center rounded border px-3 py-2 text-sm font-medium transition-colors',
               activePath === tab.path
                 ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border bg-surface text-muted-foreground hover:bg-muted',

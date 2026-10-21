@@ -20,7 +20,7 @@ type FinanceEntryListProps = {
 
 export function FinanceEntryList({ entries, onCancel, onEdit, onSettle }: FinanceEntryListProps) {
   return (
-    <div className="grid gap-3">
+    <div className="responsive-records grid gap-3">
       <div className="hidden rounded-md border border-border bg-surface shadow-subtle xl:block">
         <div className="grid grid-cols-[110px_minmax(220px,1.4fr)_130px_120px_120px_120px_220px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Tipo</span>
@@ -77,7 +77,7 @@ export function FinanceEntryList({ entries, onCancel, onEdit, onSettle }: Financ
               <Badge tone={entry.type === 'income' ? 'success' : 'danger'}>{getEntryTypeLabel(entry.type)}</Badge>
             </div>
 
-            <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">
+            <dl className="mt-4 record-values">
               <Summary label="Valor" value={formatMoney(entry.amount)} />
               <Summary label="Liquidado" value={formatMoney(entry.settled_amount)} />
               <Summary label="Saldo" value={formatMoney(entry.balance)} />
@@ -115,7 +115,7 @@ function EntryTitle({ entry }: { entry: FinancialEntryRow }) {
   return (
     <div className="min-w-0">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <h2 className="truncate font-semibold text-foreground">{entry.description}</h2>
+        <h2 className="break-words font-semibold text-foreground">{entry.description}</h2>
         <Badge tone={getFinancialStatusTone(entry.computed_status)}>{getFinancialStatusLabel(entry.computed_status)}</Badge>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">

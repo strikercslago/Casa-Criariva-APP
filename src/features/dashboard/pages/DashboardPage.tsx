@@ -46,7 +46,7 @@ export default function DashboardPage() {
             Atualizar
           </Button>
         }
-        description="Visao gerencial do dia, do mes e dos pontos que precisam de acompanhamento."
+        description="Acompanhe o dia e o que precisa da sua atenção."
         title="Inicio"
       />
 
@@ -54,18 +54,18 @@ export default function DashboardPage() {
         <Card className="border-primary/25">
           <SectionHeader icon={<CalendarDays className="h-5 w-5" aria-hidden />} title={`Hoje - ${formatDate(today)}`} />
           {todayQuery.isLoading ? <BlockSkeleton /> : (
-            <div className="mt-4 grid gap-4 md:grid-cols-[1fr_1.1fr]">
-              <dl className="grid gap-3 sm:grid-cols-3 md:grid-cols-1">
+            <div className="mt-4 grid gap-4">
+              <dl className="compact-metrics">
                 <Metric label="Aulas" value={todayData?.sessions_count ?? 0} />
-                <Metric label="Alunos esperados" value={todayData?.expected_students ?? 0} />
-                <Metric label="Frequencias pendentes" tone={(todayData?.pending_sessions_count ?? 0) > 0 ? 'warning' : undefined} value={todayData?.pending_sessions_count ?? 0} />
+                <Metric label="Alunos" value={todayData?.expected_students ?? 0} />
+                <Metric label="Pendentes" tone={(todayData?.pending_sessions_count ?? 0) > 0 ? 'warning' : undefined} value={todayData?.pending_sessions_count ?? 0} />
               </dl>
               <div className="space-y-3">
-                <div className="rounded border border-border bg-background p-3">
-                  <p className="text-sm text-muted-foreground">Proxima aula</p>
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">Próxima aula</p>
                   {todayData?.next_session_class_name ? (
                     <div className="mt-2">
-                      <p className="text-lg font-semibold text-foreground">{formatTime(todayData.next_session_start)} - {todayData.next_session_class_name}</p>
+                      <p className="text-base font-semibold text-foreground">{formatTime(todayData.next_session_start)} - {todayData.next_session_class_name}</p>
                       <p className="text-sm text-muted-foreground">{todayData.next_session_expected_students} alunos esperados</p>
                     </div>
                   ) : <p className="mt-2 text-sm text-muted-foreground">Nenhuma aula prevista.</p>}
@@ -102,12 +102,13 @@ export default function DashboardPage() {
         </Card>
       </section>
 
+      <details className="rounded-md border border-border bg-surface p-4"><summary className="cursor-pointer text-base font-semibold">Resumo do mês <span className="ml-1 text-xs font-normal text-muted-foreground">{formatReferenceMonth(referenceMonth)}</span></summary><div className="mt-4 space-y-4">
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]" aria-label="Resumo gerencial">
         <Card>
           <SectionHeader icon={<CreditCard className="h-5 w-5" aria-hidden />} title={`Financeiro - ${formatReferenceMonth(referenceMonth)}`} />
           {operationsQuery.isLoading ? <BlockSkeleton /> : (
             <div className="mt-4 space-y-4">
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="metric-grid">
                 <Metric label="Entradas recebidas" tone="success" value={formatMoney(operations?.cash_in ?? 0)} />
                 <Metric label="Saidas pagas" tone="danger" value={formatMoney(operations?.cash_out ?? 0)} />
                 <Metric label="Resultado de caixa" value={formatMoney(operations?.result_amount ?? 0)} />
@@ -124,13 +125,13 @@ export default function DashboardPage() {
           <SectionHeader icon={<Users className="h-5 w-5" aria-hidden />} title="Alunos e turmas" />
           {operationsQuery.isLoading ? <BlockSkeleton /> : (
             <div className="mt-4 space-y-4">
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="metric-grid">
                 <Metric label="Alunos ativos" value={operations?.active_students_count ?? 0} />
                 <Metric label="Novos no mes" value={operations?.new_students_count ?? 0} />
                 <Metric label="Saidas no mes" value={operations?.archived_students_count ?? 0} />
                 <Metric label="Variacao liquida" value={signedNumber(operations?.net_students_change ?? 0)} />
               </div>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="metric-grid">
                 <Metric label="Turmas ativas" value={operations?.active_classes_count ?? 0} />
                 <Metric label="Ocupacao global" value={formatPercent(operations?.class_occupancy_rate)} />
                 <Metric label="Turmas lotadas" value={operations?.full_classes_count ?? 0} />
@@ -191,6 +192,7 @@ export default function DashboardPage() {
           <LinkButton to="/relatorios">Abrir Relatorios</LinkButton>
         </div>
       </Card>
+      </div></details>
     </div>
   )
 }
@@ -229,11 +231,11 @@ function SectionHeader({ icon, title }: { icon: ReactNode; title: string }) {
 
 function Metric({ label, tone, value }: { label: string; tone?: 'danger' | 'success' | 'warning'; value: ReactNode }) {
   const toneClass = tone === 'success' ? 'text-success' : tone === 'danger' ? 'text-danger' : tone === 'warning' ? 'text-amber-700' : 'text-foreground'
-  return <div className="rounded border border-border bg-background p-3"><dt className="text-sm text-muted-foreground">{label}</dt><dd className={`mt-1 text-xl font-semibold ${toneClass}`}>{value}</dd></div>
+  return <div className="metric-tile"><dt>{label}</dt><dd className={toneClass}>{value}</dd></div>
 }
 
 function LinkButton({ to, children }: { children: ReactNode; to: string }) {
-  return <Link className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded border border-border bg-surface px-3 text-sm font-medium text-foreground shadow-subtle transition-colors hover:bg-muted" to={to}>{children}<ArrowRight className="h-4 w-4" aria-hidden /></Link>
+  return <Link className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded border border-border bg-surface px-3 text-sm font-medium text-foreground shadow-subtle transition-colors hover:bg-muted" to={to}>{children}<ArrowRight className="h-4 w-4" aria-hidden /></Link>
 }
 
 function MiniSection({ icon, isLoading, metrics, title, to }: { icon: ReactNode; isLoading: boolean; metrics: Array<[string, ReactNode]>; title: string; to: string }) {
@@ -242,7 +244,7 @@ function MiniSection({ icon, isLoading, metrics, title, to }: { icon: ReactNode;
       <SectionHeader icon={icon} title={title} />
       {isLoading ? <BlockSkeleton /> : (
         <div className="mt-4 space-y-3">
-          <dl className="grid gap-2">
+          <dl className="metric-grid">
             {metrics.map(([label, value]) => <Metric key={label} label={label} value={value} />)}
           </dl>
           <LinkButton to={to}>Abrir</LinkButton>

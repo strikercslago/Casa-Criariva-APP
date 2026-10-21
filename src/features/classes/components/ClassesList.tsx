@@ -20,10 +20,10 @@ export function ClassesList({ classes, onOpenClass, onPrefetchClass }: ClassesLi
           key={classItem.class_id}
           onMouseEnter={() => onPrefetchClass?.(classItem.class_id)}
         >
-          <div className="grid gap-4 md:grid-cols-[minmax(220px,1.2fr)_minmax(180px,1fr)_minmax(180px,auto)_auto] md:items-center">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,auto)_auto] xl:items-center">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="truncate text-base font-semibold text-foreground">{classItem.name}</h2>
+                <h2 className="break-words text-base font-semibold text-foreground">{classItem.name}</h2>
                 {classItem.is_full ? <span className="rounded border border-warning/30 bg-warning/15 px-2 text-xs font-semibold text-amber-700">Turma cheia</span> : null}
               </div>
               {classItem.description ? (
@@ -33,7 +33,7 @@ export function ClassesList({ classes, onOpenClass, onPrefetchClass }: ClassesLi
 
             <div className="text-sm">
               <p className="font-medium text-foreground">{formatClassSchedules(classItem.schedules)}</p>
-              <p className="mt-1 text-muted-foreground">ISO: segunda=1, domingo=7</p>
+
             </div>
 
             <div className="text-sm">

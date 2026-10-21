@@ -14,8 +14,8 @@ type FinanceObligationListProps = {
 
 export function FinanceObligationList({ rows }: FinanceObligationListProps) {
   return (
-    <div className="grid gap-3">
-      <div className="hidden rounded-md border border-border bg-surface shadow-subtle lg:block">
+    <div className="responsive-records grid gap-3">
+      <div className="records-table rounded-md border border-border bg-surface shadow-subtle">
         <div className="grid grid-cols-[minmax(220px,1.4fr)_130px_130px_130px_130px_120px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Item</span>
           <span>Origem</span>
@@ -39,11 +39,11 @@ export function FinanceObligationList({ rows }: FinanceObligationListProps) {
         ))}
       </div>
 
-      <div className="grid gap-3 lg:hidden">
+      <div className="records-cards gap-3">
         {rows.map((row) => (
           <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={row.item_id}>
             <ObligationTitle row={row} />
-            <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">
+            <dl className="mt-4 record-values">
               <Summary label="Total" value={formatMoney(row.amount)} />
               <Summary label="Liquidado" value={formatMoney(row.settled_amount)} />
               <Summary label="Saldo" value={formatMoney(row.balance)} />
@@ -59,7 +59,7 @@ function ObligationTitle({ row }: { row: FinanceObligationRow }) {
   return (
     <div className="min-w-0">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <h2 className="truncate font-semibold text-foreground">{row.description}</h2>
+        <h2 className="break-words font-semibold text-foreground">{row.description}</h2>
         <Badge tone={getFinancialStatusTone(row.computed_status)}>{getFinancialStatusLabel(row.computed_status)}</Badge>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">

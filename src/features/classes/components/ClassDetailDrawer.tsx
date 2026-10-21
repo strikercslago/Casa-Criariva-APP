@@ -162,7 +162,7 @@ export function ClassDetailDrawer({ classId, onClose }: ClassDetailDrawerProps) 
               isStatusLoading={statusMutation.isPending}
             />
 
-            <div className="overflow-x-auto">
+            <div className="min-w-0">
               <Tabs>
                 {[
                   { label: 'Visao geral', value: 'overview' },

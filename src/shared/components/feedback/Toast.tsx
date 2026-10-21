@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="fixed bottom-4 right-4 z-50 grid w-[calc(100vw-2rem)] max-w-sm gap-2"
+        className="toast-stack fixed bottom-4 right-4 z-50 grid w-[calc(100vw-2rem)] max-w-sm gap-2"
       >
         {messages.map((message) => {
           const Icon = icons[message.tone]
