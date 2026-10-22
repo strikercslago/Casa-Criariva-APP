@@ -32,7 +32,7 @@ export const studentFormSchema = z
       .string()
       .min(1, 'Informe a data de matricula.')
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use uma data valida.'),
-    status: z.enum(['active', 'inactive']) satisfies z.ZodType<Exclude<StudentStatus, 'archived'>>,
+    status: z.enum(['active', 'inactive', 'archived']) satisfies z.ZodType<StudentStatus>,
     notes: optionalText.refine((value) => value === null || value.length <= 2000, {
       message: 'Use no maximo 2000 caracteres.',
     }),

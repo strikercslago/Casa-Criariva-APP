@@ -16,6 +16,7 @@ const useClassesForEnrollment = vi.hoisted(() => vi.fn())
 const useCompleteStudentEnrollment = vi.hoisted(() => vi.fn())
 const useGuardianCandidates = vi.hoisted(() => vi.fn())
 const useStudent360Data = vi.hoisted(() => vi.fn())
+vi.mock('@/app/providers/AuthProvider', () => ({ useAuth: () => ({ roles: ['owner'] }) }))
 
 vi.mock('@/features/students/hooks/useStudents', () => ({
   useArchiveStudent,
@@ -24,6 +25,7 @@ vi.mock('@/features/students/hooks/useStudents', () => ({
   useStudentDetail,
   useStudentsList,
   useUpdateStudent,
+  useChangeStudentStatus: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }))
 
 vi.mock('@/features/students/hooks/useStudent360', () => ({

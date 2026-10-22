@@ -6,6 +6,7 @@ import {
   listStudents,
   restoreStudent,
   updateStudent,
+  updateStudentStatus,
 } from '@/features/students/api/studentsApi'
 import { studentsKeys } from '@/features/students/hooks/studentsKeys'
 import { dashboardKeys, reportsKeys } from '@/features/reports/hooks/reportsKeys'
@@ -68,6 +69,14 @@ export function useRestoreStudent() {
 
   return useMutation({
     mutationFn: restoreStudent,
+    onSuccess: (student) => updateStudentsCache(queryClient, student),
+  })
+}
+
+export function useChangeStudentStatus() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: 'active' | 'inactive' }) => updateStudentStatus(id, status),
     onSuccess: (student) => updateStudentsCache(queryClient, student),
   })
 }

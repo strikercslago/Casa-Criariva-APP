@@ -27,7 +27,7 @@ export const roleLabels: Record<AppRole, string> = {
 
 export const permissionMatrix: Record<PermissionModule, Record<AppRole, PermissionLevel>> = {
   dashboard: { owner: 'CRUD', admin: 'READ', teacher: 'LIMITED' },
-  students: { owner: 'CRUD', admin: 'CRUD', teacher: 'READ' },
+  students: { owner: 'CRUD', admin: 'CRUD', teacher: 'OPERATIONAL' },
   guardians: { owner: 'CRUD', admin: 'CRUD', teacher: '-' },
   classes: { owner: 'CRUD', admin: 'CRUD', teacher: 'READ' },
   agenda: { owner: 'CRUD', admin: 'CRUD', teacher: 'OPERATIONAL' },

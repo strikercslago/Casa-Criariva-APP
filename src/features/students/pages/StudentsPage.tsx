@@ -114,6 +114,9 @@ export default function StudentsPage() {
         search={search}
         status={status}
       />
+      <p className="student-status-help rounded bg-surface px-3 py-2 text-sm text-muted-foreground">
+        Abra a ficha para ativar ou desativar um aluno. Em <strong>Arquivados</strong>, use <strong>Restaurar aluno</strong> para recuperá-lo.
+      </p>
 
       {isInitialLoading ? <StudentsSkeleton /> : null}
 

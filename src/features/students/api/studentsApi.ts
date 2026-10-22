@@ -16,6 +16,13 @@ import { getRestoreStatus } from '@/features/students/utils/studentStatus'
 import { mapStudentsError } from '@/features/students/utils/studentsErrors'
 
 const STUDENTS_TIMEOUT_MS = 12_000
+
+export async function findStudentMatches(name: string): Promise<StudentListItem[]> {
+  const normalized = name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR')
+  if (normalized.length < 2) return []
+  const result = await listStudents({ page: 1, pageSize: 100, search: name.trim(), status: 'all' })
+  return result.students.filter((student) => student.full_name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR') === normalized)
+}
 const STUDENT_LIST_SELECT = 'id, full_name, preferred_name, photo_path, birth_date, enrollment_date, status'
 const STUDENT_DETAIL_SELECT =
   'id, full_name, preferred_name, photo_path, birth_date, enrollment_date, status, notes, created_by, created_at, updated_at, archived_at'
@@ -142,10 +149,10 @@ export async function restoreStudent(id: string): Promise<StudentRow> {
   return updateStudentStatus(id, getRestoreStatus(), null)
 }
 
-async function updateStudentStatus(
+export async function updateStudentStatus(
   id: string,
   status: StudentStatus,
-  archivedAt: string | null,
+  archivedAt: string | null = null,
 ): Promise<StudentRow> {
   const supabase = getClient()
 

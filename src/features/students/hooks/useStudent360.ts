@@ -45,7 +45,7 @@ export function useCompleteStudentEnrollment() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (values: EnrollmentWizardValues) => completeStudentEnrollment(values),
+    mutationFn: ({ values, requestId }: { values: EnrollmentWizardValues; requestId: string }) => completeStudentEnrollment(values, requestId),
     onSuccess: ({ studentId }) => {
       void queryClient.invalidateQueries({ queryKey: studentsKeys.lists() })
       void queryClient.invalidateQueries({ queryKey: student360Keys.classes.list() })

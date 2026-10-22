@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Save } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/shared/components/ui/Button'
 import { Textarea, Select } from '@/shared/components/ui/FormControls'
@@ -26,8 +26,12 @@ export function StudentForm({ mode, isSubmitting, student, onCancel, onSubmit }:
     defaultValues: student ? toFormValues(student) : getStudentFormDefaults(),
     resolver: zodResolver(studentFormSchema),
   })
+  const editingId = useRef(student?.id)
 
   useEffect(() => {
+    // A background refresh must not replace text while the user is typing.
+    if (editingId.current === student?.id) return
+    editingId.current = student?.id
     form.reset(student ? toFormValues(student) : getStudentFormDefaults())
   }, [form, student])
 
@@ -35,6 +39,8 @@ export function StudentForm({ mode, isSubmitting, student, onCancel, onSubmit }:
     <form className="grid gap-4" onSubmit={form.handleSubmit((values) => onSubmit(values))}>
       <Input
         autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
         error={form.formState.errors.full_name?.message}
         label="Nome completo *"
         {...form.register('full_name')}
@@ -68,6 +74,7 @@ export function StudentForm({ mode, isSubmitting, student, onCancel, onSubmit }:
           label="Status"
           {...form.register('status')}
         >
+          {student?.status === 'archived' ? <option value="archived">Arquivado — use Restaurar aluno na ficha</option> : null}
           {editableStudentStatusOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -108,6 +115,6 @@ function toFormValues(student: StudentRow): StudentFormValues {
     full_name: student.full_name,
     notes: student.notes,
     preferred_name: student.preferred_name,
-    status: student.status === 'archived' ? 'active' : student.status,
+    status: student.status,
   }
 }

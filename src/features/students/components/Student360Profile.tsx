@@ -1,4 +1,4 @@
-import { Archive, Camera, Copy, MessageCircle, Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Archive, Camera, Copy, MessageCircle, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
 import { ErrorState } from '@/shared/components/feedback/ErrorState'
@@ -17,6 +17,7 @@ import {
   useArchiveStudent,
   useRestoreStudent,
   useUpdateStudent,
+  useChangeStudentStatus,
 } from '@/features/students/hooks/useStudents'
 import type { StudentFormValues } from '@/features/students/schemas/studentSchema'
 import type {
@@ -68,6 +69,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
   const updateMutation = useUpdateStudent()
   const archiveMutation = useArchiveStudent()
   const restoreMutation = useRestoreStudent()
+  const statusMutation = useChangeStudentStatus()
   const uploadPhotoMutation = useUploadStudentPhoto()
   const removePhotoMutation = useRemoveStudentPhoto()
   const { notify } = useToast()
@@ -157,6 +159,16 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
     }
   }
 
+  async function handleToggleStatus() {
+    try {
+      const status = student.status === 'active' ? 'inactive' : 'active'
+      await statusMutation.mutateAsync({ id: student.id, status })
+      notify({ title: status === 'active' ? 'Aluno ativado.' : 'Aluno desativado. Histórico preservado.', tone: 'success' })
+    } catch (error) {
+      notify({ title: 'Não foi possível alterar o status.', description: getUserSafeErrorMessage(error), tone: 'error' })
+    }
+  }
+
   if (isEditingStudent) {
     return (
       <StudentForm
@@ -193,6 +205,13 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
         </dl>
 
         <div className="grid gap-2">
+          <div className="student-status-help rounded-md bg-muted/50 p-3 text-sm">
+            <p className="font-semibold">Situação do aluno</p>
+            <p className="mt-1 text-muted-foreground">{student.status === 'archived' ? 'Cadastro arquivado. Restaure para voltar à lista de ativos.' : 'Use Inativo para quem não está frequentando. A foto e o histórico são preservados.'}</p>
+            <Button className="mt-3 w-full" isLoading={statusMutation.isPending || restoreMutation.isPending} onClick={student.status === 'archived' ? handleRestore : handleToggleStatus} variant="secondary">
+              {student.status === 'archived' ? 'Restaurar aluno' : student.status === 'active' ? 'Desativar aluno' : 'Ativar aluno'}
+            </Button>
+          </div>
           <Button
             leftIcon={<Pencil className="h-4 w-4" aria-hidden />}
             onClick={() => setIsEditingStudent(true)}
@@ -202,16 +221,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
           </Button>
           <details><summary className="flex min-h-12 cursor-pointer items-center text-sm font-medium text-muted-foreground">Mais opções do aluno</summary>
           <div className="grid gap-2 sm:grid-cols-2">
-          {student.status === 'archived' ? (
-            <Button
-              isLoading={restoreMutation.isPending}
-              leftIcon={<RotateCcw className="h-4 w-4" aria-hidden />}
-              onClick={handleRestore}
-              variant="secondary"
-            >
-              Restaurar aluno
-            </Button>
-          ) : (
+          {student.status !== 'archived' ? (
             <Button
               isLoading={archiveMutation.isPending}
               leftIcon={<Archive className="h-4 w-4" aria-hidden />}
@@ -220,7 +230,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
             >
               Arquivar aluno
             </Button>
-          )}
+          ) : null}
           <Button
             isLoading={uploadPhotoMutation.isPending}
             leftIcon={<Camera className="h-4 w-4" aria-hidden />}
@@ -728,6 +738,7 @@ function HistoryTab({ events }: { events: AuditEventRow[] }) {
       'guardian.unlinked_from_student': 'Responsavel desvinculado',
       'student.created': 'Aluno cadastrado',
       'student.updated': 'Aluno atualizado',
+        'student.status_changed': 'Situação do aluno alterada',
       'student.archived': 'Aluno arquivado',
       'student.restored': 'Aluno restaurado',
     }),

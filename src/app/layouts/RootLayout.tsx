@@ -1,6 +1,7 @@
 import { Suspense, useMemo, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { LogOut, Menu, Palette, ShieldCheck } from 'lucide-react'
+import { LogOut, Menu, ShieldCheck } from 'lucide-react'
+import casaCriativaLogo from '@/assets/brand/casa-criativa-logo.png'
 import { routePreloaders } from '@/app/router/routePreloaders'
 import { canAccessModule } from '@/app/auth/permissions'
 import { useAuth } from '@/app/providers/AuthProvider'
@@ -63,7 +64,7 @@ export function RootLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <OfflineBanner />
-      <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
+      <header className="brand-header sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
         <div className="flex h-16 items-center gap-2 px-4 lg:gap-3 lg:px-6">
           <IconButton
             className="lg:hidden"
@@ -74,9 +75,7 @@ export function RootLayout() {
           </IconButton>
 
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-              <Palette className="h-5 w-5" aria-hidden />
-            </div>
+            <img src={casaCriativaLogo} alt="Logo oficial da Casa Criativa" className="h-14 w-14 shrink-0 rounded-xl object-contain" />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">Casa Criativa</p>
               <p className="truncate text-xs text-muted-foreground">Gestão escolar</p>

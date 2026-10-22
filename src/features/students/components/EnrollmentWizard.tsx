@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { findStudentMatches } from '@/features/students/api/studentsApi'
+import { StudentDuplicateNotice } from './StudentDuplicateNotice'
+import { useAuth } from '@/app/providers/AuthProvider'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
 import { useToast } from '@/shared/components/feedback/Toast'
@@ -25,7 +28,7 @@ import { useUploadStudentPhoto } from '@/features/students/hooks/useStudentPhoto
 import type { GuardianRow } from '@/features/students/types/student360Types'
 import { formatMoney, formatSchedules, getWeekdayLabel } from '@/features/students/utils/student360Format'
 
-const steps = ['Aluno', 'Responsaveis', 'Turma', 'Mensalidade', 'Revisar'] as const
+const fullSteps = ['Aluno', 'Responsaveis', 'Turma', 'Mensalidade', 'Revisar'] as const
 const weekdays = [1, 2, 3, 4, 5, 6, 7]
 
 type EnrollmentWizardProps = {
@@ -35,7 +38,14 @@ type EnrollmentWizardProps = {
 }
 
 export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWizardProps) {
+  const { roles } = useAuth()
+  const basicOnly = !roles.some((role) => role === 'owner' || role === 'admin')
+  const steps = basicOnly ? ['Aluno', 'Revisar'] : fullSteps
   const [step, setStep] = useState(0)
+  const contentStep = basicOnly && step === 1 ? 4 : step
+  const submittingRef = useRef(false)
+  const requestIdRef = useRef(crypto.randomUUID())
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const classesQuery = useClassesForEnrollment()
@@ -55,6 +65,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
 
   useEffect(() => {
     if (isOpen) {
+      requestIdRef.current = crypto.randomUUID()
       setStep(0)
       setSubmitError(null)
       setPhotoFile(null)
@@ -63,6 +74,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
   }, [form, isOpen])
 
   function requestClose() {
+    if (submittingRef.current) return
     if (form.formState.isDirty && !window.confirm('Descartar a matricula em andamento?')) {
       return
     }
@@ -87,6 +99,10 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
   }
 
   async function submitEnrollment() {
+    if (submittingRef.current) return
+    submittingRef.current = true
+    setIsSubmitting(true)
+    try {
     const isValid = await form.trigger()
 
     if (!isValid) {
@@ -97,7 +113,10 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
     setSubmitError(null)
 
     try {
-      const result = await completeMutation.mutateAsync(form.getValues())
+      const values = form.getValues()
+      const matches = await findStudentMatches(values.student.full_name)
+      if (matches.length && !window.confirm('Já existe aluno com este nome, inclusive entre os arquivados. Confira a ficha existente antes de cadastrar. É outra pessoa com o mesmo nome?')) return
+      const result = await completeMutation.mutateAsync({ values, requestId: requestIdRef.current })
 
       if (photoFile) {
         try {
@@ -119,6 +138,10 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
       onClose()
     } catch (error) {
       setSubmitError(getUserSafeErrorMessage(error))
+    }
+    } finally {
+      submittingRef.current = false
+      setIsSubmitting(false)
     }
   }
 
@@ -153,15 +176,15 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
         </ol>
 
         <div className="sm:min-h-[420px]">
-          {step === 0 ? <StudentStep form={form} photoFile={photoFile} setPhotoFile={setPhotoFile} /> : null}
-          {step === 1 ? (
+          {contentStep === 0 ? <StudentStep form={form} photoFile={photoFile} setPhotoFile={setPhotoFile} basicOnly={basicOnly} /> : null}
+          {contentStep === 1 ? (
             <GuardiansStep
               addGuardian={addGuardian}
               form={form}
               guardiansArray={guardiansArray}
             />
           ) : null}
-          {step === 2 ? (
+          {contentStep === 2 ? (
             <ClassStep
               classes={classesQuery.data ?? []}
               form={form}
@@ -169,13 +192,13 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
               selectedClass={selectedClass}
             />
           ) : null}
-          {step === 3 ? (
+          {contentStep === 3 ? (
             <BillingStep
               financialGuardianOptions={financialGuardianOptions}
               form={form}
             />
           ) : null}
-          {step === 4 ? (
+          {contentStep === 4 ? (
             <ReviewStep
               selectedClass={selectedClass}
               values={values}
@@ -196,7 +219,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
 
           <div className="flex gap-2">
             <Button
-              disabled={step === 0}
+              disabled={step === 0 || isSubmitting}
               leftIcon={<ArrowLeft className="h-4 w-4" aria-hidden />}
               onClick={() => setStep((current) => Math.max(0, current - 1))}
               type="button"
@@ -214,7 +237,7 @@ export function EnrollmentWizard({ isOpen, onClose, onCompleted }: EnrollmentWiz
               </Button>
             ) : (
               <Button
-                isLoading={completeMutation.isPending || uploadPhotoMutation.isPending}
+                isLoading={isSubmitting}
                 leftIcon={<Check className="h-4 w-4" aria-hidden />}
                 onClick={() => void submitEnrollment()}
                 type="button"
@@ -233,10 +256,12 @@ function StudentStep({
   form,
   photoFile,
   setPhotoFile,
+  basicOnly,
 }: {
   form: ReturnType<typeof useForm<EnrollmentWizardValues>>
   photoFile: File | null
   setPhotoFile: (file: File | null) => void
+  basicOnly: boolean
 }) {
   const errors = form.formState.errors.student
   const studentName = form.watch('student.full_name')
@@ -248,13 +273,16 @@ function StudentStep({
         <p className="mt-1 text-sm text-muted-foreground">Dados minimos para abrir uma matricula.</p>
       </div>
 
-      <StudentPhotoPicker file={photoFile} onChange={setPhotoFile} studentName={studentName} />
+      {!basicOnly ? <StudentPhotoPicker file={photoFile} onChange={setPhotoFile} studentName={studentName} /> : <p className="rounded bg-muted p-3 text-sm">Cadastre os dados do aluno. Responsáveis, turmas e mensalidades podem ser completados pela administração.</p>}
 
       <Input
+        autoCorrect="off"
+        spellCheck={false}
         error={errors?.full_name?.message}
         label="Nome completo *"
         {...form.register('student.full_name')}
       />
+      <StudentDuplicateNotice name={studentName} />
       <Input
         error={errors?.preferred_name?.message}
         label="Nome preferido"

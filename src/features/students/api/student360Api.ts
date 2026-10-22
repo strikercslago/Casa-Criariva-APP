@@ -168,12 +168,13 @@ export async function getStudent360Data(studentId: string): Promise<Student360Da
 
 export async function completeStudentEnrollment(
   values: EnrollmentWizardValues,
+  requestId: string = crypto.randomUUID(),
 ): Promise<CompleteEnrollmentResult> {
   const supabase = getClient()
   const payload = toCompleteEnrollmentPayload(values)
 
   const { data, error } = await withTimeout(
-    supabase.rpc('complete_student_enrollment', { payload }),
+    supabase.rpc('complete_student_enrollment', { payload: { ...payload, request_id: requestId } }),
     STUDENT_360_TIMEOUT_MS,
     createTimeoutError,
   )
