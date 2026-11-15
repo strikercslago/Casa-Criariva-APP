@@ -17,9 +17,9 @@ test('daily operational smoke covers critical routes and logout', async ({ page 
   await page.getByLabel('Email').fill('owner@example.com')
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
 
-  await expectRouteHeading(page, '/', 'Inicio')
+  await expectRouteHeading(page, '/', 'Menu Principal')
   await expectRouteHeading(page, '/alunos', 'Alunos')
   await expectRouteHeading(page, '/agenda', 'Agenda')
   await expectRouteHeading(page, '/frequencia', 'Frequencia')
@@ -29,7 +29,7 @@ test('daily operational smoke covers critical routes and logout', async ({ page 
   for (const width of [360, 390, 430]) {
     await page.setViewportSize({ width, height: 820 })
     await expectRouteHeading(page, '/agenda', 'Agenda')
-    await expect(page.getByRole('button', { name: 'Abrir menu' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Atalhos principais' })).toBeVisible()
     await expectRouteHeading(page, '/mensalidades', 'Mensalidades')
   }
 

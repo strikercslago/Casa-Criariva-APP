@@ -1,5 +1,16 @@
 # Security
 
+## Current verification boundary (2026-11-15)
+
+The historical validation statements below were recorded in previous phases;
+they were not re-executed against a database during this audit. The current local
+review inspected migrations and code and ran mocked tests. No remote database,
+Auth, Storage policy, backup or production-header verification was performed.
+See `ENGINEERING-REVIEW.md` for unresolved findings, especially non-atomic role
+replacement in `admin-users`. Materials/Reports no longer have frontend modules;
+their historical backend objects remain. The audit settings route redirects to
+the general Settings page. Do not infer current production safety from old checks.
+
 Security is enforced in the interface and in the database. Hiding a button is never considered authorization.
 
 ## Supabase

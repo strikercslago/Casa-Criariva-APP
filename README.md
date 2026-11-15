@@ -2,7 +2,11 @@
 
 Sistema administrativo SPA para a operacao Casa Criativa.
 
-Inclui Auth Supabase, RLS, alunos, responsaveis, turmas, agenda, frequencia, mensalidades, financeiro, eventos, materiais, estoque, relatorios, dashboard gerencial e administracao.
+Ideias e chamados: envio de sugestões, problemas e melhorias em texto, acompanhamento pelo autor e resposta da administração. Consulte `docs/FEEDBACK-TICKETS.md` para ativação da nova tabela no Supabase.
+
+Inclui Auth Supabase, RLS, alunos, responsaveis, turmas, agenda, frequencia, mensalidades, financeiro, eventos, dashboard gerencial e administracao.
+
+Materiais e Relatorios foram removidos do aplicativo. O dashboard possui sua propria camada de dados. Configuracoes exibe Geral, Seguranca e Usuarios (conforme o perfil), sem matriz de permissoes nem tela de auditoria. As regras de acesso e os registros internos de auditoria continuam funcionando. Migracoes historicas e tipos do Supabase foram preservados para manter compatibilidade com o banco existente, sem excluir dados.
 
 ## Stack
 
@@ -36,6 +40,10 @@ Inclui Auth Supabase, RLS, alunos, responsaveis, turmas, agenda, frequencia, men
 - `npm run e2e:smoke`
 
 ## Documentation
+
+- `docs/ENGINEERING-REVIEW.md` — baseline, verified fixes and prioritized remaining work.
+- `docs/MAIN-MENU.md` — navigation and responsive menu.
+- `docs/FEEDBACK-TICKETS.md` — ticket feature and database activation.
 
 - `docs/ARCHITECTURE.md`
 - `docs/PERFORMANCE.md`
@@ -80,7 +88,7 @@ Netlify is configured by `netlify.toml` for a Vite SPA:
 - Node: `20`
 - SPA fallback: `/* -> /index.html`
 
-Production env must include only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+Frontend env uses `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` and optional `VITE_GOOGLE_CALENDAR_ENABLED` (false until configured). OAuth secrets belong only in the Edge Function environment. See [Google Calendar setup](docs/GOOGLE-CALENDAR.md).
 
 ## Operations Docs
 
@@ -92,3 +100,5 @@ Production env must include only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHA
 - `docs/BACKUP-RECOVERY.md`
 - `docs/DISASTER-RECOVERY.md`
 - `docs/OBSERVABILITY.md`
+
+- [Google Calendar integration and setup](docs/GOOGLE-CALENDAR.md)

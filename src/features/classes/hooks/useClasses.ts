@@ -14,7 +14,7 @@ import { classesKeys } from '@/features/classes/hooks/classesKeys'
 import type { ClassListFilters } from '@/features/classes/types/classTypes'
 import type { ClassDetail } from '@/features/classes/types/classTypes'
 import type { ClassFormValues } from '@/features/classes/schemas/classSchema'
-import { dashboardKeys, reportsKeys } from '@/features/reports/hooks/reportsKeys'
+import { dashboardKeys } from '@/features/dashboard/hooks/dashboardKeys'
 import { student360Keys } from '@/features/students/hooks/student360Keys'
 import { studentsKeys } from '@/features/students/hooks/studentsKeys'
 
@@ -149,7 +149,6 @@ function invalidateClass(queryClient: ReturnType<typeof useQueryClient>, classId
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.todayRoot() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.operationsRoot() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.attentionRoot() })
-  void queryClient.invalidateQueries({ queryKey: reportsKeys.all })
 }
 
 function invalidateStudent(queryClient: ReturnType<typeof useQueryClient>, studentId: string) {

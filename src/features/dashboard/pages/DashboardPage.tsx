@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, Boxes, CalendarDays, CreditCard, GraduationCap, RefreshCw, Users } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CalendarDays, CreditCard, GraduationCap, RefreshCw, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '@/shared/components/navigation/PageHeader'
@@ -9,8 +9,8 @@ import { Card } from '@/shared/components/ui/Card'
 import { getCurrentReferenceMonth, formatReferenceMonth } from '@/features/finance/utils/financeDates'
 import { formatMoney } from '@/features/finance/utils/financeFormat'
 import { toIsoDate } from '@/features/billing/utils/billingDates'
-import { useDashboardAttention, useDashboardOperations, useDashboardToday } from '@/features/reports/hooks/useReports'
-import { formatDate, formatPercent, formatTime } from '@/features/reports/utils/reportingPeriod'
+import { useDashboardAttention, useDashboardOperations, useDashboardToday } from '@/features/dashboard/hooks/useDashboard'
+import { formatDate, formatPercent, formatTime } from '@/features/dashboard/utils/dashboardFormat'
 
 const today = toIsoDate(new Date())
 const referenceMonth = getCurrentReferenceMonth()
@@ -146,7 +146,7 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3" aria-label="Operacao do mes">
+      <section className="grid gap-4 lg:grid-cols-2" aria-label="Operacao do mes">
         <MiniSection
           icon={<GraduationCap className="h-5 w-5" aria-hidden />}
           isLoading={operationsQuery.isLoading}
@@ -171,27 +171,8 @@ export default function DashboardPage() {
           title="Eventos"
           to="/eventos"
         />
-        <MiniSection
-          icon={<Boxes className="h-5 w-5" aria-hidden />}
-          isLoading={operationsQuery.isLoading}
-          metrics={[
-            ['Abaixo do minimo', operations?.low_stock_count ?? 0],
-            ['Sem estoque', operations?.out_of_stock_count ?? 0],
-          ]}
-          title="Estoque"
-          to="/materiais"
-        />
       </section>
 
-      <Card className="print:hidden">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-semibold text-foreground">Relatorios gerenciais</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Resumo mensal, financeiro, alunos, turmas, frequencia, eventos e estoque.</p>
-          </div>
-          <LinkButton to="/relatorios">Abrir Relatorios</LinkButton>
-        </div>
-      </Card>
       </div></details>
     </div>
   )

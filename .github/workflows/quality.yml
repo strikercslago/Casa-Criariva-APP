@@ -1,0 +1,40 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Fixtures intercept this origin; this key is intentionally fake.
+      VITE_SUPABASE_URL: https://baugbpqdgslfogggaqen.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: test-only-not-a-real-key
+      VITE_GOOGLE_CALENDAR_ENABLED: "true"
+      GOOGLE_CALENDAR_E2E: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm exec --yes --package=deno@2.9.6 -- deno check supabase/functions/google-calendar/index.ts
+      - run: npm exec --yes --package=deno@2.9.6 -- deno test --allow-env supabase/tests/google-calendar.test.ts
+      - run: npm exec --yes --package=deno@2.9.6 -- deno run --node-modules-dir=none --allow-read --allow-env supabase/tests/google-calendar-sql.ts
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e

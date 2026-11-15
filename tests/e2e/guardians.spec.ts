@@ -1,4 +1,5 @@
-﻿import { expect, test } from '@playwright/test'
+import { selectSection } from './helpers/selectSection'
+import { expect, test } from '@playwright/test'
 
 type Student = {
   archived_at: string | null
@@ -416,10 +417,10 @@ test('manages guardians and keeps Student 360 consistent with mocked Supabase re
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
-  await page.getByRole('link', { exact: true, name: 'Responsaveis' }).click()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
+  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { exact: true, name: 'Responsáveis' }).click()
   await expect(page.getByRole('heading', { name: 'Responsaveis' })).toBeVisible()
-  await expect(page.getByText('Maria Existente').first()).toBeVisible()
+  await expect(page.getByText('Maria Existente').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Novo responsavel' }).click()
   await page.getByLabel('Nome completo *').fill('Maria E2E')
@@ -443,18 +444,18 @@ test('manages guardians and keeps Student 360 consistent with mocked Supabase re
   await page.getByRole('button', { name: 'Salvar vinculo' }).click()
   await expect(page.getByText('Aluno vinculado.', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Alunos vinculados' }).click()
-  await expect(page.getByText('Ana Carolina').first()).toBeVisible()
+  await expect(page.getByText('Ana Carolina').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Abrir aluno' }).click()
   await expect(page.getByRole('heading', { name: 'Ana Carolina' })).toBeVisible()
-  await page.getByRole('button', { name: 'Responsaveis' }).click()
-  await expect(page.getByText('Maria E2E Editada').first()).toBeVisible()
-  await expect(page.getByText('Financeiro').first()).toBeVisible()
+  await selectSection(page, 'Responsaveis')
+  await expect(page.getByText('Maria E2E Editada').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('Financeiro').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('dialog', { name: 'Aluno' }).getByRole('button', { name: 'Fechar' }).click()
-  await page.getByRole('link', { exact: true, name: 'Responsaveis' }).click()
+  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { exact: true, name: 'Responsáveis' }).click()
   await page.getByRole('searchbox', { name: 'Buscar responsavel' }).fill('54999999999')
-  await expect(page.getByText('Maria E2E Editada').first()).toBeVisible()
+  await expect(page.getByText('Maria E2E Editada').filter({ visible: true }).first()).toBeVisible()
   await page.getByRole('button', { name: 'Abrir Maria E2E Editada' }).first().click()
   await page.getByRole('button', { name: 'Alunos vinculados' }).click()
   await page.getByRole('button', { name: 'Alterar vinculo' }).click()
@@ -462,8 +463,8 @@ test('manages guardians and keeps Student 360 consistent with mocked Supabase re
   await page.getByRole('button', { name: 'Salvar vinculo' }).click()
   await expect(page.getByText('Vinculo atualizado.')).toBeVisible()
   await page.getByRole('button', { name: 'Abrir aluno' }).click()
-  await page.getByRole('button', { name: 'Responsaveis' }).click()
-  await expect(page.getByRole('dialog', { name: 'Aluno' }).getByText('Maria E2E Editada').first()).toBeVisible()
+  await selectSection(page, 'Responsaveis')
+  await expect(page.getByRole('dialog', { name: 'Aluno' }).getByText('Maria E2E Editada').filter({ visible: true }).first()).toBeVisible()
   await expect(
     page
       .getByRole('dialog', { name: 'Aluno' })
@@ -473,7 +474,7 @@ test('manages guardians and keeps Student 360 consistent with mocked Supabase re
   ).toHaveCount(0)
 
   await page.getByRole('dialog', { name: 'Aluno' }).getByRole('button', { name: 'Fechar' }).click()
-  await page.getByRole('link', { exact: true, name: 'Responsaveis' }).click()
+  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { exact: true, name: 'Responsáveis' }).click()
   await page.getByRole('button', { name: 'Abrir Maria E2E Editada' }).first().click()
   await page.getByRole('button', { name: 'Alunos vinculados' }).click()
   await page.getByRole('button', { name: 'Desvincular' }).click()

@@ -57,9 +57,10 @@ import {
 type Student360ProfileProps = {
   student: StudentRow
   onArchiveRequest: () => void
+  showActions?: boolean
 }
 
-export function Student360Profile({ student, onArchiveRequest }: Student360ProfileProps) {
+export function Student360Profile({ student, onArchiveRequest, showActions }: Student360ProfileProps) {
   const [isEditingStudent, setIsEditingStudent] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [paymentFee, setPaymentFee] = useState<MonthlyFeeListRow | null>(null)
@@ -219,7 +220,7 @@ export function Student360Profile({ student, onArchiveRequest }: Student360Profi
           >
             Editar dados do aluno
           </Button>
-          <details><summary className="flex min-h-12 cursor-pointer items-center text-sm font-medium text-muted-foreground">Mais opções do aluno</summary>
+          <details open={showActions || undefined}><summary className="flex min-h-12 cursor-pointer items-center text-sm font-medium text-muted-foreground">Mais opções do aluno</summary>
           <div className="grid gap-2 sm:grid-cols-2">
           {student.status !== 'archived' ? (
             <Button

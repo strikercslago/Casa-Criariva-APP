@@ -63,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const client = supabase
     let isMounted = true
+    let receivedAuthEvent = false
 
     async function bootstrapSession() {
       const startedAt = performance.now()
@@ -82,7 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const durationMs = Math.round(performance.now() - startedAt)
 
-      if (!isMounted) {
+      // A delayed getSession result must not undo a newer login or logout.
+      if (!isMounted || receivedAuthEvent) {
         return
       }
 
@@ -118,6 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void bootstrapSession()
 
     const { data: listener } = client.auth.onAuthStateChange((event, session) => {
+      if (!isMounted) return
+      receivedAuthEvent = true
       logAuthDiagnostic('B.session', 'success', {
         authEvent: event,
         hasSession: Boolean(session),

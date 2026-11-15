@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider, useAuth } from './AuthProvider'
 
 const getSession = vi.hoisted(() => vi.fn())
@@ -67,6 +67,29 @@ function AuthConsumer() {
 }
 
 describe('AuthProvider', () => {
+  beforeEach(() => vi.clearAllMocks())
+  it('does not restore a stale bootstrap session after a sign-out event', async () => {
+    let finishBootstrap!: (value: unknown) => void
+    getSession.mockReturnValueOnce(new Promise((resolve) => { finishBootstrap = resolve }))
+    onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    renderWithQuery(<AuthProvider><AuthConsumer /></AuthProvider>)
+    const listener = onAuthStateChange.mock.calls[onAuthStateChange.mock.calls.length - 1][0]
+    act(() => listener('SIGNED_OUT', null))
+    await act(async () => finishBootstrap({ data: { session: { user: { id: 'old-user' } } }, error: null }))
+    expect(screen.getByText('Status: unauthenticated')).toBeInTheDocument()
+  })
+
+  it('does not replace a new sign-in with a late bootstrap error', async () => {
+    let finishBootstrap!: (value: unknown) => void
+    getSession.mockReturnValueOnce(new Promise((resolve) => { finishBootstrap = resolve }))
+    onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    renderWithQuery(<AuthProvider><AuthConsumer /></AuthProvider>)
+    const listener = onAuthStateChange.mock.calls[onAuthStateChange.mock.calls.length - 1][0]
+    await act(async () => listener('SIGNED_IN', { user: { id: 'new-user' } }))
+    await act(async () => finishBootstrap({ data: null, error: new Error('Network failed') }))
+    expect(screen.getByText('Status: authenticated')).toBeInTheDocument()
+  })
+
   it('loads session once and fetches account data through queries', async () => {
     getSession.mockResolvedValueOnce({
       data: {

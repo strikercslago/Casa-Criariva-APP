@@ -1,3 +1,4 @@
+import { selectSection } from './helpers/selectSection'
 import { expect, test } from '@playwright/test'
 
 test.use({ viewport: { height: 844, width: 390 } })
@@ -487,7 +488,7 @@ test('manages classes, enrollments and Student 360 sync with mocked Supabase req
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/turmas')
   await expect(page.getByRole('heading', { name: 'Turmas' })).toBeVisible()
   await expect(page.getByText('Teatro 1').first()).toBeVisible()
@@ -521,9 +522,9 @@ test('manages classes, enrollments and Student 360 sync with mocked Supabase req
 
   await page.getByRole('button', { name: 'Abrir aluno' }).click()
   await expect(page.getByRole('heading', { name: 'Ana Carolina' })).toBeVisible()
-  await page.getByRole('button', { name: 'Matriculas' }).click()
+  await selectSection(page, 'Matriculas')
   await expect(page.getByText('Teatro 1')).toBeVisible()
-  await page.getByRole('button', { name: 'Historico' }).click()
+  await selectSection(page, 'Historico')
   await expect(page.getByText('Matricula transferida')).toBeVisible()
 
   await page.getByRole('dialog', { name: 'Aluno' }).getByRole('button', { name: 'Fechar' }).click()

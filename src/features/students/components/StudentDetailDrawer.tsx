@@ -14,9 +14,10 @@ import {
 type StudentDetailDrawerProps = {
   studentId: string | null
   onClose: () => void
+  showActions?: boolean
 }
 
-export function StudentDetailDrawer({ studentId, onClose }: StudentDetailDrawerProps) {
+export function StudentDetailDrawer({ studentId, onClose, showActions }: StudentDetailDrawerProps) {
   const [isConfirmingArchive, setIsConfirmingArchive] = useState(false)
   const studentQuery = useStudentDetail(studentId)
   const archiveMutation = useArchiveStudent()
@@ -63,6 +64,7 @@ export function StudentDetailDrawer({ studentId, onClose }: StudentDetailDrawerP
 
         {student ? (
           <Student360Profile
+            showActions={showActions}
             onArchiveRequest={() => setIsConfirmingArchive(true)}
             student={student}
           />

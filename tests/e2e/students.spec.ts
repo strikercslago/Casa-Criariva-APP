@@ -257,18 +257,18 @@ test('manages students with mocked Supabase requests', async ({ page }) => {
       }
 
       const statusFilter = url.searchParams.get('status')?.replace('eq.', '')
-      const nameFilter = url.searchParams.get('full_name')?.replace('ilike.', '').replaceAll('%', '').toLowerCase()
+      const nameFilter = (url.searchParams.get('full_name')?.replace('ilike.', '') ?? url.searchParams.get('matching_classes.class.name')?.replace('ilike.', ''))?.replaceAll('%', '').toLowerCase()
       const filtered = students.filter((student) => {
         const matchesStatus = !statusFilter || student.status === statusFilter
-        const matchesName = !nameFilter || student.full_name.toLowerCase().includes(nameFilter)
+        const matchesName = !nameFilter || student.full_name.toLowerCase().includes(nameFilter) || (student.id === 'student-2' && ('artes visuais'.includes(nameFilter) || 'responsavel bia'.includes(nameFilter)))
 
         return matchesStatus && matchesName
       })
 
       await route.fulfill({
         contentType: 'application/json',
-        headers: { 'content-range': `0-${Math.max(filtered.length - 1, 0)}/${filtered.length}` },
-        json: filtered,
+        headers: { 'access-control-expose-headers': 'content-range', 'content-range': `0-${Math.max(filtered.length - 1, 0)}/${filtered.length}` },
+        json: filtered.map((student) => ({ ...student, enrollments: student.id === 'student-2' ? [{ status: 'active', class: { name: 'Artes Visuais', class_schedules: [{ start_time: '09:00:00' }] } }] : [] })),
         status: 200,
       })
       return
@@ -309,8 +309,8 @@ test('manages students with mocked Supabase requests', async ({ page }) => {
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
-  await page.getByRole('link', { exact: true, name: 'Alunos' }).click()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
+  await page.getByRole('navigation', { name: 'Módulos da escola' }).getByRole('link', { exact: true, name: 'Alunos' }).click()
   await expect(page.getByRole('heading', { name: 'Alunos' })).toBeVisible()
   await expect(page.getByText('Nenhum aluno cadastrado ainda.')).toBeVisible()
 
@@ -341,8 +341,32 @@ test('manages students with mocked Supabase requests', async ({ page }) => {
   await page.getByRole('button', { name: 'Concluir matricula' }).click()
 
   await expect(page.getByText('Matricula concluida com sucesso.')).toBeVisible()
-  await expect(page.getByText('Aluno E2E Temporario').first()).toBeVisible()
+  await expect(page.getByText('Aluno E2E Temporario').filter({ visible: true }).first()).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Aluno E2E Temporario' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Fechar', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Cartões', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  const requestsBeforeToggle = restRequests.length
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
+  await expect(page.locator('.student-directory--list')).toBeVisible()
+  await page.getByRole('button', { name: 'Cartões', exact: true }).click()
+  await expect(page.locator('.student-directory--cards')).toBeVisible()
+  expect(restRequests.length).toBe(requestsBeforeToggle)
+  while (await page.getByRole('button', { name: 'Fechar aviso', exact: true }).count()) {
+    await page.getByRole('button', { name: 'Fechar aviso', exact: true }).first().click()
+  }
+  for (const width of [360, 390, 430, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await expect(page.locator('.student-directory--cards')).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ path: `test-results/students-cards-${width}.png`, fullPage: true })
+    await page.getByRole('button', { name: 'Lista', exact: true }).click()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ path: `test-results/students-list-${width}.png`, fullPage: true })
+    await page.getByRole('button', { name: 'Cartões', exact: true }).click()
+  }
+  await page.getByRole('button', { name: 'Opções de Aluno E2E Temporario' }).click()
+  await expect(page.getByRole('button', { name: 'Arquivar aluno' })).toBeVisible()
 
   const replacePhotoChooserPromise = page.waitForEvent('filechooser')
   await page.getByRole('button', { name: 'Alterar foto' }).click()
@@ -362,25 +386,69 @@ test('manages students with mocked Supabase requests', async ({ page }) => {
   await page.getByRole('button', { name: 'Remover foto' }).click()
   await expect(page.getByText('Foto removida.')).toBeVisible()
 
+  await page.getByText('Mais opções do aluno', { exact: true }).click()
   await page.getByRole('button', { name: 'Editar dados do aluno' }).click()
   await page.getByLabel(/^Nome completo/).fill('Aluno E2E Editado')
   await page.getByRole('button', { name: 'Salvar' }).click()
   await expect(page.getByText('Aluno atualizado.')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Aluno E2E Editado' })).toBeVisible()
 
+  if (!(await page.getByRole('button', { name: 'Arquivar aluno' }).isVisible())) {
+    await page.getByText('Mais opções do aluno', { exact: true }).click()
+  }
   await page.getByRole('button', { name: 'Arquivar aluno' }).click()
   await page.getByRole('button', { name: 'Arquivar', exact: true }).click()
   await expect(page.getByText('Aluno arquivado.')).toBeVisible()
-  await expect(page.getByText('Arquivado').first()).toBeVisible()
+  await expect(page.getByText('Arquivado').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Fechar' }).first().click()
+  await page.getByRole('button', { name: 'Filtros de alunos' }).click()
   await page.getByRole('tab', { name: 'Arquivados' }).click()
-  await expect(page.getByText('Aluno E2E Editado').first()).toBeVisible()
+  await expect(page.getByText('Aluno E2E Editado').filter({ visible: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: 'Abrir Aluno E2E Editado' }).first().click()
+  await page.getByRole('button', { name: 'Abrir Aluno E2E Editado' }).filter({ visible: true }).first().click()
   await page.getByRole('button', { name: 'Restaurar aluno' }).click()
   await expect(page.getByText('Aluno restaurado.')).toBeVisible()
-  await expect(page.getByText('Ativo').first()).toBeVisible()
+  await expect(page.getByText('Ativo').filter({ visible: true }).first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'Fechar', exact: true }).click()
+  students.push(...(['active', 'inactive', 'archived'] as const).map((status, index) => ({
+    ...students[0], id: `student-${index + 2}`, full_name: ['Bia Teste', 'Carlos Teste', 'Diana Teste'][index], preferred_name: null, status,
+  })))
+  await page.getByRole('tab', { name: 'Todos', exact: true }).click()
+  await page.getByRole('button', { name: 'Atualizar', exact: true }).click()
+  await expect(page.getByRole('list', { name: 'Alunos encontrados' }).getByRole('listitem')).toHaveCount(4)
+  await expect(page.getByText('Artes Visuais · Manhã')).toBeVisible()
+  await expect(page.locator('.student-indicator').first()).toContainText('4')
+  await page.getByRole('button', { name: 'Filtros de alunos' }).click()
+  while (await page.getByRole('button', { name: 'Fechar aviso', exact: true }).count()) {
+    await page.getByRole('button', { name: 'Fechar aviso', exact: true }).first().click()
+  }
+  for (const width of [360, 390, 430, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ path: `test-results/students-cards-${width}.png`, fullPage: true })
+    await page.getByRole('button', { name: 'Lista', exact: true }).click()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.screenshot({ path: `test-results/students-list-${width}.png`, fullPage: true })
+    await page.getByRole('button', { name: 'Cartões', exact: true }).click()
+  }
+  for (const search of ['Bia', 'Artes Visuais', 'Responsavel Bia']) {
+    await page.getByRole('searchbox', { name: 'Buscar aluno' }).fill(search)
+    await expect(page.getByRole('list', { name: 'Alunos encontrados' }).getByRole('listitem')).toHaveCount(1)
+    await expect(page.getByRole('button', { name: 'Abrir Bia Teste' })).toBeVisible()
+    await page.getByRole('button', { name: 'Lista', exact: true }).click()
+    await expect(page.getByRole('searchbox', { name: 'Buscar aluno' })).toHaveValue(search)
+    await expect(page.getByRole('button', { name: 'Abrir Bia Teste' })).toBeVisible()
+    await page.getByRole('button', { name: 'Cartões', exact: true }).click()
+  }
+  await page.getByRole('searchbox', { name: 'Buscar aluno' }).fill('Sem correspondencia')
+  await expect(page.getByText('Nenhum aluno encontrado para essa busca.')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'Lista', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.student-directory--list')).toBeVisible()
 
   expect(authRequests.filter((request) => request.includes('/token'))).toHaveLength(1)
   expect(restRequests.filter((request) => request.includes('/students')).length).toBeGreaterThanOrEqual(6)

@@ -8,7 +8,9 @@ export type StudentUpdate = Database['public']['Tables']['students']['Update']
 export type StudentListItem = Pick<
   StudentRow,
   'birth_date' | 'enrollment_date' | 'full_name' | 'id' | 'photo_path' | 'preferred_name' | 'status'
->
+> & {
+  enrollments?: Array<{ status: string; class: { name: string; class_schedules: Array<{ start_time: string }> } | null }>
+}
 
 export type StudentStatusFilter = 'all' | StudentStatus
 

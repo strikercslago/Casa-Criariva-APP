@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { RootLayout } from '@/app/layouts/RootLayout'
 import { allowedRolesForModule } from '@/app/auth/permissions'
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/app/router/AuthGuards'
@@ -10,6 +10,7 @@ import { routePreloaders } from './routePreloaders'
 
 const LoginPage = lazy(routePreloaders.login)
 const DashboardPage = lazy(routePreloaders.dashboard)
+const MainMenuPage = lazy(routePreloaders.mainMenu)
 const AgendaPage = lazy(routePreloaders.agenda)
 const StudentsPage = lazy(routePreloaders.students)
 const GuardiansPage = lazy(routePreloaders.guardians)
@@ -18,9 +19,7 @@ const AttendancePage = lazy(routePreloaders.attendance)
 const BillingPage = lazy(routePreloaders.billing)
 const FinancePage = lazy(routePreloaders.finance)
 const EventsPage = lazy(routePreloaders.events)
-const MaterialsPage = lazy(routePreloaders.materials)
 const IdeasPage = lazy(routePreloaders.ideas)
-const ReportsPage = lazy(routePreloaders.reports)
 const SettingsPage = lazy(routePreloaders.settings)
 
 function guarded(module: Parameters<typeof allowedRolesForModule>[0], element: JSX.Element) {
@@ -46,7 +45,8 @@ export const router = createBrowserRouter([
           {
             element: <RootLayout />,
             children: [
-              { index: true, element: <DashboardPage /> },
+              { index: true, element: <MainMenuPage /> },
+              { path: 'visao-geral', element: guarded('dashboard', <DashboardPage />) },
               { path: 'agenda', element: guarded('agenda', <AgendaPage />) },
               { path: 'alunos', element: guarded('students', <StudentsPage />) },
               { path: 'responsaveis', element: guarded('guardians', <GuardiansPage />) },
@@ -57,12 +57,10 @@ export const router = createBrowserRouter([
               { path: 'mensalidades', element: guarded('billing', <BillingPage />) },
               { path: 'financeiro', element: guarded('finance', <FinancePage />) },
               { path: 'eventos', element: guarded('events', <EventsPage />) },
-              { path: 'materiais', element: guarded('materials', <MaterialsPage />) },
-              { path: 'ideias', element: <IdeasPage /> },
-              { path: 'relatorios', element: guarded('reports', <ReportsPage />) },
+              { path: 'ideias', element: guarded('feedback', <IdeasPage />) },
               { path: 'configuracoes', element: guarded('settings', <SettingsPage />) },
               { path: 'configuracoes/usuarios', element: guarded('users', <SettingsPage />) },
-              { path: 'configuracoes/auditoria', element: guarded('audit', <SettingsPage />) },
+              { path: 'configuracoes/auditoria', element: <Navigate to="/configuracoes" replace /> },
               { path: 'configuracoes/seguranca', element: guarded('security', <SettingsPage />) },
               { path: '403', element: <ForbiddenPage /> },
               { path: '*', element: <NotFoundPage /> },

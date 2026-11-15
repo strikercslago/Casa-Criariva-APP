@@ -5,6 +5,7 @@ export type AppErrorCode =
   | 'validation'
   | 'not-found'
   | 'unknown'
+  | 'configuration'
 
 export class AppError extends Error {
   readonly code: AppErrorCode

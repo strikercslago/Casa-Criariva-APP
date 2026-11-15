@@ -16,8 +16,9 @@ async function setup(page: Page) {
       saved = route.request().postDataJSON().payload.records
       json = session.session_id
     } else if (url.pathname.endsWith('/students')) {
-      const name = url.searchParams.get('full_name')?.replace('ilike.%', '').replace(/%$/, '').toLowerCase()
-      json = url.searchParams.has('id') ? students[0] : students.filter((student) => !name || student.full_name.toLowerCase().includes(name))
+      const name = (url.searchParams.get('full_name') ?? url.searchParams.get('matching_classes.class.name'))?.replace('ilike.%', '').replace(/%$/, '').toLowerCase()
+      const status = url.searchParams.get('status')?.replace('eq.', '')
+      json = url.searchParams.has('id') ? students[0] : students.filter((student) => (!name || student.full_name.toLowerCase().includes(name)) && (!status || student.status === status))
     } else { await route.fallback(); return }
     await route.fulfill({ json, headers: { 'access-control-expose-headers': 'content-range', 'content-range': `0-2/${Array.isArray(json) ? json.length : 1}` } })
   })
@@ -25,7 +26,7 @@ async function setup(page: Page) {
   await page.getByLabel('Email').fill('owner@example.com')
   await page.getByLabel('Senha', { exact: true }).fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Inicio', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal', exact: true })).toBeVisible()
   return () => saved
 }
 
@@ -67,11 +68,8 @@ for (const width of [280, 305, 320, 390, 430, 1280]) {
     await expect(page.getByRole('button', { name: 'Abrir Mariana Costa' }).filter({ visible: true })).toBeVisible()
     await expect(page.getByRole('button', { name: `Abrir ${students[0].full_name}` })).toHaveCount(0)
     if (width < 1024) {
-      await page.getByRole('button', { name: 'Mais', exact: true }).click()
-      const dialog = page.getByRole('dialog', { name: 'Explorar Casa Criativa' })
-      await expect(dialog).toBeVisible()
-      await dialog.getByRole('link', { name: 'Turmas', exact: true }).click()
-      await expect(dialog).not.toBeVisible()
+      await page.getByRole('navigation', { name: 'Atalhos principais' }).getByRole('link', { name: 'Painel' }).click()
+      await page.getByRole('navigation', { name: 'Módulos da escola' }).getByRole('link', { name: 'Turmas', exact: true }).click()
       await expect(page).toHaveURL(/turmas/)
     }
   })
@@ -83,25 +81,20 @@ test('preserves unsaved attendance when navigation is dismissed', async ({ page 
   await page.goto('/frequencia?session=session-mobile&date=2026-10-21')
   await page.getByRole('button', { name: 'Presente', exact: true }).first().click()
   page.once('dialog', (dialog) => dialog.dismiss())
-  await page.getByRole('navigation', { name: 'Atalhos principais' }).getByRole('link', { name: 'Alunos', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Atalhos principais' }).getByRole('link', { name: 'Painel', exact: true }).click()
   await expect(page).toHaveURL(/frequencia/)
   await expect(page.getByRole('button', { name: 'Presente', exact: true }).first()).toHaveAttribute('aria-pressed', 'true')
 })
 
-test('mobile menu traps focus and restores its trigger', async ({ page }) => {
+test('mobile menu supports keyboard navigation without a drawer', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await setup(page)
-  const trigger = page.getByRole('button', { name: 'Mais', exact: true })
-  await trigger.click()
-  const dialog = page.getByRole('dialog', { name: 'Explorar Casa Criativa' })
-  await expect(dialog).toBeFocused()
-  await page.keyboard.press('Shift+Tab')
-  await expect(dialog.getByRole('button', { name: 'Sair', exact: true })).toBeFocused()
-  await page.keyboard.press('Tab')
-  await expect(dialog.getByRole('button', { name: 'Fechar', exact: true })).toBeFocused()
-  await page.keyboard.press('Escape')
-  await expect(dialog).not.toBeVisible()
-  await expect(trigger).toBeFocused()
+  const agenda = page.getByRole('navigation', { name: 'Módulos da escola' }).getByRole('link', { name: 'Agenda', exact: true })
+  await agenda.focus()
+  await expect(agenda).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/agenda/)
+  await expect(page.getByRole('button', { name: 'Abrir menu' })).toHaveCount(0)
 })
 
 test('agenda handles empty and failed requests', async ({ page }) => {
@@ -125,7 +118,7 @@ for (const width of [305, 390, 768, 1280]) {
     await setup(page)
     await page.route('**/functions/v1/**', (route) => route.fulfill({ json: { users: [] } }))
     await page.route('**/rest/v1/rpc/get_application_settings', (route) => route.fulfill({ json: { organization_name: 'Casa Criativa', display_name: 'Casa Criativa', phone: '', email: '', timezone: 'America/Sao_Paulo', locale: 'pt-BR', currency_code: 'BRL', default_class_duration_minutes: 60, default_due_day: 10, default_page_size: 20, low_stock_threshold: 5, updated_at: '2026-10-21T12:00:00Z' } }))
-    for (const path of ['/', '/agenda', '/alunos', '/responsaveis', '/turmas', '/frequencia', '/mensalidades', '/financeiro', '/eventos', '/materiais', '/relatorios', '/ideias', '/configuracoes', '/configuracoes/seguranca', '/configuracoes/usuarios', '/configuracoes/auditoria']) {
+    for (const path of ['/', '/agenda', '/alunos', '/responsaveis', '/turmas', '/frequencia', '/mensalidades', '/financeiro', '/eventos', '/ideias', '/configuracoes', '/configuracoes/seguranca', '/configuracoes/usuarios']) {
       await page.goto(path)
       await expect(page.locator('h1').first()).toBeVisible()
       await expect(page.locator('[aria-busy="true"]')).toHaveCount(0)
@@ -147,15 +140,11 @@ test('student totals and action labels stay on one line at 305px', async ({ page
   await setup(page)
   await page.route('**/rest/v1/students?**', (route) => route.fulfill({ json: students, headers: { 'access-control-expose-headers': 'content-range', 'content-range': '0-2/36' } }))
   await page.goto('/alunos')
-  const total = page.locator('.list-count .whitespace-nowrap')
+  const total = page.locator('.student-indicator-1 dd')
   await expect(total).toHaveText('36')
   expect((await total.boundingBox())!.height).toBeLessThanOrEqual(30)
   const refreshText = page.getByRole('button', { name: 'Atualizar', exact: true }).locator('span')
   expect((await refreshText.boundingBox())!.height).toBeLessThan(25)
   await noOverflow(page)
   await page.screenshot({ path: 'test-results/design-alunos-36-305.png', fullPage: true })
-  await page.goto('/relatorios')
-  await page.getByLabel('Selecionar seção').selectOption({ label: 'Financeiro' })
-  await expect(page).toHaveURL(/tipo=financial/)
-  await noOverflow(page)
 })

@@ -13,7 +13,7 @@ import {
 import { billingKeys } from '@/features/billing/hooks/billingKeys'
 import type { BillingListFilters } from '@/features/billing/types/billingTypes'
 import { financeKeys } from '@/features/finance/hooks/financeKeys'
-import { dashboardKeys, reportsKeys } from '@/features/reports/hooks/reportsKeys'
+import { dashboardKeys } from '@/features/dashboard/hooks/dashboardKeys'
 import { student360Keys } from '@/features/students/hooks/student360Keys'
 
 const BILLING_STALE_TIME_MS = 60_000
@@ -147,5 +147,4 @@ function invalidateMonth(queryClient: ReturnType<typeof useQueryClient>, referen
   void queryClient.invalidateQueries({ queryKey: financeKeys.all })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.operationsRoot() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.attentionRoot() })
-  void queryClient.invalidateQueries({ queryKey: reportsKeys.all })
 }

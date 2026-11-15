@@ -351,7 +351,7 @@ test('manages events, waitlist and event receivables through finance', async ({ 
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/eventos')
   await expect(page.getByRole('heading', { name: 'Eventos' })).toBeVisible()
   await expect(page.getByText('Nenhum evento encontrado.')).toBeVisible()

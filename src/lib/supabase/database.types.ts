@@ -6,6 +6,21 @@
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type FeedbackTicketRow = {
+  id: string
+  number: number
+  created_by: string
+  author_name: string
+  category: 'suggestion' | 'bug' | 'improvement'
+  title: string
+  description: string
+  status: 'open' | 'reviewing' | 'planned' | 'completed' | 'declined'
+  response: string
+  updated_by: string | null
+  created_at: string
+  updated_at: string
+}
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -39,6 +54,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      feedback_tickets: {
+        Row: FeedbackTicketRow
+        Insert: { id: string; created_by: string; author_name: string; category: FeedbackTicketRow['category']; title: string; description: string }
+        Update: Partial<FeedbackTicketRow>
+        Relationships: []
+      }
       app_settings: {
         Row: {
           currency_code: string
@@ -1493,6 +1514,8 @@ export type Database = {
     }
     Functions: {
       active_owner_count: { Args: never; Returns: number }
+      create_feedback_ticket: { Args: { p_id: string; p_category: string; p_title: string; p_description: string }; Returns: FeedbackTicketRow[] }
+      respond_feedback_ticket: { Args: { p_id: string; p_status: string; p_response: string }; Returns: FeedbackTicketRow[] }
       add_student_to_class: { Args: { payload: Json }; Returns: string }
       archive_material: { Args: { payload: Json }; Returns: string }
       assert_attendance_window: {

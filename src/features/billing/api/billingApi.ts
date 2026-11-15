@@ -154,7 +154,11 @@ export async function registerPayment(input: RegisterPaymentInput): Promise<Regi
     throw mapBillingError(error)
   }
 
-  return data?.[0] ?? { amount_paid: 0, balance: 0, computed_status: 'pending', monthly_fee_id: input.monthlyFeeId, payment_id: '' }
+  const receipt = data?.[0]
+  if (!receipt?.payment_id || receipt.monthly_fee_id !== input.monthlyFeeId) {
+    throw new AppError('unknown', 'Não recebemos a confirmação do pagamento. Confira o histórico da mensalidade antes de registrar novamente.')
+  }
+  return receipt
 }
 
 export async function reversePayment(input: ReversePaymentInput) {

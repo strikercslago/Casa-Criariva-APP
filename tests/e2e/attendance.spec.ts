@@ -135,10 +135,10 @@ test('records attendance from the dedicated frequency page without overwriting s
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/frequencia')
   await expect(page.getByRole('heading', { name: 'Frequencia' })).toBeVisible()
-  await expect(page.getByRole('button', { name: /Artes 1/ })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Turma da chamada' })).toBeVisible()
 
   const ana = page.locator('article').filter({ hasText: 'Ana Carolina' })
   const bruno = page.locator('article').filter({ hasText: 'Bruno Lima' })

@@ -69,7 +69,7 @@ async function signInAsRole(page: Page, role: Role) {
   await page.getByLabel('Email').fill(`${role}@example.com`)
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
 }
 
 test('owner can access user administration', async ({ page }) => {
@@ -94,7 +94,8 @@ test('teacher is blocked from user administration and sees operational dashboard
   await expect(page.getByRole('heading', { name: 'Acesso nao autorizado' })).toBeVisible()
 
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
+  await page.getByRole('main').getByRole('link', { name: /Visão geral/ }).click()
   await expect(page.getByRole('link', { name: 'Abrir Frequencia' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Abrir Financeiro' })).toHaveCount(0)
 })

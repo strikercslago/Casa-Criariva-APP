@@ -374,12 +374,12 @@ test('manages finance summary, entries, settlements and consolidated cash flow',
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/financeiro')
   await expect(page.getByRole('heading', { name: 'Financeiro' })).toBeVisible()
   await expect(page.getByText('Entradas recebidas')).toBeVisible()
-  await expect(page.getByText('R$ 300,00').first()).toBeVisible()
-  await expect(page.getByText('Mensalidade - Ana Carolina, Bia Souza').first()).toBeVisible()
+  await expect(page.getByText('R$ 300,00').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('Mensalidade - Ana Carolina, Bia Souza').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Novo lancamento' }).click()
   const drawer = page.getByRole('dialog', { name: 'Novo lancamento' })
@@ -394,26 +394,28 @@ test('manages finance summary, entries, settlements and consolidated cash flow',
   await expect(page.getByText('Lancamento criado.')).toBeVisible()
 
   await page.getByRole('button', { name: 'Lancamentos' }).click()
-  await expect(page.getByText('Compra de tintas').first()).toBeVisible()
-  await expect(page.getByText('R$ 120,00').first()).toBeVisible()
+  await expect(page.getByText('Compra de tintas').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('R$ 120,00').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Liquidar' }).click()
   await page.getByRole('dialog', { name: 'Registrar pagamento' }).getByLabel('Valor').fill('100')
   await page.getByRole('button', { name: 'Registrar' }).click()
   await expect(page.getByText('Pagamento registrado.')).toBeVisible()
-  await expect(page.getByText('Parcial').first()).toBeVisible()
-  await expect(page.getByText('R$ 20,00').first()).toBeVisible()
+  await expect(page.getByText('Parcial').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('R$ 20,00').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Visao geral' }).click()
-  await expect(page.getByText('- R$ 100,00')).toBeVisible()
-  await expect(page.getByText('Mensalidade - Ana Carolina, Bia Souza').first()).toBeVisible()
+  const outgoing = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'Compra de tintas' }) })
+  await expect(outgoing.getByText('Saida', { exact: true })).toBeVisible()
+  await expect(outgoing.getByText('R$ 100,00', { exact: true })).toBeVisible()
+  await expect(page.getByText('Mensalidade - Ana Carolina, Bia Souza').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'A pagar' }).click()
-  await expect(page.getByText('Compra de tintas').first()).toBeVisible()
-  await expect(page.getByText('R$ 20,00').first()).toBeVisible()
+  await expect(page.getByText('Compra de tintas').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('R$ 20,00').filter({ visible: true }).first()).toBeVisible()
 
   await page.getByRole('button', { name: 'A receber' }).click()
-  await expect(page.getByText('Mensalidade - Ana Carolina').first()).toBeVisible()
+  await expect(page.getByText('Mensalidade - Ana Carolina').filter({ visible: true }).first()).toBeVisible()
 
   expect(rpcRequests).toEqual(expect.arrayContaining([
     'POST get_finance_month_summary',

@@ -12,8 +12,7 @@ export type PermissionModule =
   | 'billing'
   | 'finance'
   | 'events'
-  | 'materials'
-  | 'reports'
+  | 'feedback'
   | 'settings'
   | 'users'
   | 'audit'
@@ -35,8 +34,7 @@ export const permissionMatrix: Record<PermissionModule, Record<AppRole, Permissi
   billing: { owner: 'CRUD', admin: 'CRUD', teacher: '-' },
   finance: { owner: 'CRUD', admin: '-', teacher: '-' },
   events: { owner: 'CRUD', admin: 'CRUD', teacher: '-' },
-  materials: { owner: 'CRUD', admin: 'CRUD', teacher: '-' },
-  reports: { owner: 'CRUD', admin: '-', teacher: '-' },
+  feedback: { owner: 'CRUD', admin: 'CRUD', teacher: 'OPERATIONAL' },
   settings: { owner: 'CRUD', admin: 'READ', teacher: 'READ' },
   users: { owner: 'OWNER', admin: '-', teacher: '-' },
   audit: { owner: 'OWNER', admin: '-', teacher: '-' },

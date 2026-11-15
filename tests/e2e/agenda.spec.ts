@@ -1,3 +1,4 @@
+import { selectSection } from './helpers/selectSection'
 import { expect, test } from '@playwright/test'
 
 test.use({ viewport: { height: 844, width: 390 } })
@@ -226,19 +227,19 @@ test('records agenda attendance in batch and syncs Student 360', async ({ page }
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/agenda')
   await expect(page.getByRole('heading', { name: 'Agenda' })).toBeVisible()
   await expect(page.getByText('Frequencia pendente')).toBeVisible()
-  await page.getByRole('button', { name: 'Abrir aula' }).click()
-  await expect(page.getByRole('dialog', { name: 'Frequencia da aula' })).toBeVisible()
-  await page.getByRole('button', { name: 'Todos presentes' }).click()
-  await page.getByRole('button', { name: 'Salvar frequencia' }).click()
+  await page.getByRole('button', { name: 'Fazer chamada' }).click()
+  await expect(page).toHaveURL(/frequencia/)
+  await page.getByRole('button', { name: 'Marcar todos presentes' }).click()
+  await page.getByRole('button', { name: 'Salvar chamada' }).click()
   await expect(page.getByText('Frequencia salva.')).toBeVisible()
 
   await page.goto('/alunos?aluno=student-1')
   await expect(page.getByRole('dialog', { name: 'Aluno' }).getByRole('heading', { name: 'Ana Carolina' })).toBeVisible()
-  await page.getByRole('button', { name: 'Frequencia' }).click()
+  await selectSection(page, 'Frequencia')
   await expect(page.getByText('Taxa de presenca')).toBeVisible()
   await expect(page.getByText('100%')).toBeVisible()
   await expect(page.getByText('Artes 1')).toBeVisible()

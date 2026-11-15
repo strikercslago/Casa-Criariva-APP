@@ -27,7 +27,16 @@ Rules:
 
 ## Storage Objects
 
-This app currently does not depend on Supabase Storage for core records. If Storage is added later, create a separate object backup procedure. Database backups do not prove object recovery.
+Student photos use the private `student-photos` bucket. Back up its objects
+separately, preserving object paths, and retain the corresponding `students.photo_path`
+references and bucket policies. Temporary signed URLs are not backups. Reconcile
+object counts and sample photo downloads in an isolated restore rehearsal.
+Database backups alone do not restore these image files.
+
+The logical schema dump command above is not a complete backup: schema, record
+data, Auth identities and Storage objects each need a verified recovery procedure.
+Verify what the installed CLI version exports before relying on the result.
+No backup or restore was executed during the November engineering audit.
 
 ## Restore
 

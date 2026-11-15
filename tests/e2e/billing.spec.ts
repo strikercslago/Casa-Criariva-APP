@@ -1,3 +1,4 @@
+import { selectSection } from './helpers/selectSection'
 import { expect, test } from '@playwright/test'
 
 type Payment = {
@@ -351,44 +352,44 @@ test('manages monthly fees, partial payments, reversals and Student 360 finance'
   await page.getByLabel('Senha').fill('senha-segura')
   await page.getByRole('button', { name: 'Entrar' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Inicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/mensalidades')
   await expect(page.getByRole('heading', { name: 'Mensalidades' })).toBeVisible()
   await expect(page.getByText('Nenhuma mensalidade gerada neste mes.')).toBeVisible()
 
   await page.getByRole('button', { name: /^Gerar mensalidades/ }).first().click()
   await expect(page.getByText('Mensalidades geradas.')).toBeVisible()
-  await expect(page.getByText('Ana Carolina').first()).toBeVisible()
-  await expect(page.getByText('Vencida').first()).toBeVisible()
+  await expect(page.getByText('Ana Carolina').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('Vencida').filter({ visible: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: 'Pagar' }).click()
+  await page.getByRole('main').getByRole('button', { name: 'Registrar pagamento', exact: true }).click()
   await page.getByLabel('Valor recebido').fill('100')
-  await page.getByRole('button', { name: 'Registrar pagamento' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Registrar pagamento', exact: true }).click()
   await expect(page.getByText('Pagamento registrado.')).toBeVisible()
-  await expect(page.getByText('Vencida - Parcial').first()).toBeVisible()
-  await expect(page.getByText('R$ 80,00').first()).toBeVisible()
+  await expect(page.getByText('Vencida - Parcial').filter({ visible: true }).first()).toBeVisible()
+  await expect(page.getByText('R$ 80,00').filter({ visible: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: 'Pagar' }).click()
-  await page.getByRole('button', { name: 'Registrar pagamento' }).click()
-  await expect(page.getByText('Paga').first()).toBeVisible()
+  await page.getByRole('main').getByRole('button', { name: 'Registrar pagamento', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Registrar pagamento', exact: true }).click()
+  await expect(page.getByText('Paga').filter({ visible: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: 'Abrir' }).click()
+  await page.getByRole('button', { name: 'Ver cobranca' }).click()
   await expect(page.getByRole('dialog', { name: 'Ficha da mensalidade' })).toBeVisible()
   await page.getByRole('button', { name: 'Reverter' }).first().click()
   await page.getByLabel('Motivo da reversao').fill('Pagamento registrado por engano no teste.')
   await page.getByRole('button', { name: 'Confirmar reversao' }).click()
   await expect(page.getByText('Pagamento revertido.')).toBeVisible()
-  await expect(page.getByText('Revertido').first()).toBeVisible()
+  await expect(page.getByText('Revertido').filter({ visible: true }).first()).toBeVisible()
   await page.getByRole('button', { name: 'Fechar' }).first().click()
 
   await page.getByRole('tab', { name: 'Parciais' }).click()
-  await expect(page.getByText('Vencida - Parcial').first()).toBeVisible()
+  await expect(page.getByText('Vencida - Parcial').filter({ visible: true }).first()).toBeVisible()
 
   await page.goto('/alunos?aluno=student-1')
   await expect(page.getByRole('dialog', { name: 'Aluno' }).getByRole('heading', { name: 'Ana Carolina' })).toBeVisible()
-  await page.getByRole('button', { name: 'Financeiro' }).click()
+  await selectSection(page, 'Financeiro')
   await expect(page.getByText('Mensalidade do mes atual')).toBeVisible()
-  await expect(page.getByText('Vencida - Parcial').first()).toBeVisible()
+  await expect(page.getByText('Vencida - Parcial').filter({ visible: true }).first()).toBeVisible()
   await expect(page.getByText('Ultimas mensalidades')).toBeVisible()
 
   expect(authRequests.filter((request) => request.includes('/token'))).toHaveLength(1)

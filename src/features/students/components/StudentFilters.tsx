@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
 import { SearchInput } from '@/shared/components/ui/SearchInput'
 import { cn } from '@/shared/utils/cn'
 import type { StudentStatusFilter } from '@/features/students/types/studentTypes'
@@ -16,19 +18,20 @@ export function StudentFilters({
   onSearchChange,
   onStatusChange,
 }: StudentFiltersProps) {
+  const [expanded, setExpanded] = useState(false)
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle lg:flex-row lg:items-center lg:justify-between">
-      <div className="w-full lg:max-w-md">
+    <div className="space-y-3">
+      <div className="flex items-center gap-2"><div className="min-w-0 flex-1">
         <SearchInput
           label="Buscar aluno"
           name="student-search"
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Buscar por nome"
+          placeholder="Buscar por nome, turma ou responsável"
           value={search}
         />
-      </div>
+      </div><button type="button" className="student-filter-toggle" aria-label="Filtros de alunos" aria-expanded={expanded} aria-controls="student-status-filters" onClick={() => setExpanded(!expanded)}><SlidersHorizontal className="h-5 w-5" aria-hidden /></button></div>
 
-      <div className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap" role="tablist" aria-label="Filtro de status">
+      <div id="student-status-filters" className={cn(expanded ? 'grid' : 'hidden', 'min-w-0 grid-cols-2 gap-2 sm:grid-cols-4')} role="tablist" aria-label="Filtro de status">
         {studentStatusOptions.map((option) => (
           <button
             aria-selected={status === option.value}
@@ -47,6 +50,7 @@ export function StudentFilters({
           </button>
         ))}
       </div>
+      {!expanded && status !== 'all' ? <p className="text-sm text-purple-800">Filtro: {studentStatusOptions.find((option) => option.value === status)?.label}</p> : null}
     </div>
   )
 }

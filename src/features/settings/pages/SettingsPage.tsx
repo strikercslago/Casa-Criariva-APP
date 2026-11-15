@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation } from 'react-router-dom'
 import { KeyRound, Plus, Save, ShieldCheck, UserX } from 'lucide-react'
 import { useAuth } from '@/app/providers/AuthProvider'
-import { permissionMatrix, roleLabels } from '@/app/auth/permissions'
+import { roleLabels } from '@/app/auth/permissions'
 import { appLocalization } from '@/app/config/localization'
 import type { AppRole } from '@/lib/supabase/types'
 import { getSupabaseClient } from '@/lib/supabase/client'
@@ -19,7 +19,6 @@ import {
   getApplicationSettings,
   inviteAdminUser,
   listAdminUsers,
-  listAuditEvents,
   updateAdminUserRole,
   updateApplicationSettings,
   type ApplicationSettings,
@@ -30,7 +29,6 @@ const settingsTabs = [
   { label: 'Geral', path: '/configuracoes' },
   { label: 'Seguranca', path: '/configuracoes/seguranca' },
   { label: 'Usuarios', path: '/configuracoes/usuarios', ownerOnly: true },
-  { label: 'Auditoria', path: '/configuracoes/auditoria', ownerOnly: true },
 ]
 
 const roles: AppRole[] = ['owner', 'admin', 'teacher']
@@ -64,7 +62,6 @@ export default function SettingsPage() {
       </nav>
 
       {activePath === '/configuracoes/usuarios' ? <UsersSettings /> : null}
-      {activePath === '/configuracoes/auditoria' ? <AuditSettings /> : null}
       {activePath === '/configuracoes/seguranca' ? <SecuritySettings /> : null}
       {activePath === '/configuracoes' ? <GeneralSettings isOwner={isOwner} /> : null}
     </div>
@@ -103,7 +100,7 @@ function GeneralSettings({ isOwner }: { isOwner: boolean }) {
           <div>
             <h2 className="text-lg font-semibold">Organizacao</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Timezone, locale e moeda sao centralizados e consumidos pela aplicacao.
+              Dados da Casa Criativa e preferências de exibição.
             </p>
           </div>
           <Badge tone={isOwner ? 'primary' : 'neutral'}>{isOwner ? 'Editavel' : 'Leitura'}</Badge>
@@ -135,8 +132,8 @@ function GeneralSettings({ isOwner }: { isOwner: boolean }) {
             value={values.email ?? ''}
             onChange={(event) => setDraft((current) => ({ ...current, email: event.target.value }))}
           />
-          <Input disabled label="Timezone" value={values.timezone} />
-          <Input disabled label="Locale" value={values.locale} />
+          <Input disabled label="Fuso horário" value={values.timezone} />
+          <Input disabled label="Idioma e região" value={values.locale} />
           <Input disabled label="Moeda" value={values.currency_code} />
           <Input
             disabled={!isOwner}
@@ -167,35 +164,6 @@ function GeneralSettings({ isOwner }: { isOwner: boolean }) {
         ) : null}
       </div>
 
-      <PermissionMatrix />
-    </section>
-  )
-}
-
-function PermissionMatrix() {
-  return (
-    <section className="rounded-md border border-border bg-surface p-4 shadow-subtle">
-      <h2 className="text-lg font-semibold">Matriz de permissoes</h2>
-      <Table className="mt-4">
-        <thead>
-          <tr>
-            <Th>Modulo</Th>
-            <Th>Owner</Th>
-            <Th>Admin</Th>
-            <Th>Teacher</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(permissionMatrix).map(([module, levels]) => (
-            <tr key={module}>
-              <Td className="font-medium text-foreground">{module}</Td>
-              <Td>{levels.owner}</Td>
-              <Td>{levels.admin}</Td>
-              <Td>{levels.teacher}</Td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
     </section>
   )
 }
@@ -326,52 +294,6 @@ function UsersSettings() {
           </Table>
         ) : null}
       </div>
-    </section>
-  )
-}
-
-function AuditSettings() {
-  const [action, setAction] = useState('')
-  const [entityType, setEntityType] = useState('')
-  const filters = useMemo(() => ({ action, entityType, page: 1 }), [action, entityType])
-  const auditQuery = useQuery({
-    queryKey: settingsKeys.audit(filters),
-    queryFn: () => listAuditEvents(filters),
-  })
-
-  return (
-    <section className="rounded-md border border-border bg-surface p-4 shadow-subtle">
-      <h2 className="text-lg font-semibold">Auditoria administrativa</h2>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <Input label="Acao" value={action} onChange={(event) => setAction(event.target.value)} />
-        <Input label="Entidade" value={entityType} onChange={(event) => setEntityType(event.target.value)} />
-      </div>
-      {auditQuery.isLoading ? <RouteSkeleton /> : null}
-      {auditQuery.error ? <ErrorState title="Nao foi possivel carregar auditoria." /> : null}
-      {auditQuery.data ? (
-        <Table className="mt-4">
-          <thead>
-            <tr>
-              <Th>Data</Th>
-              <Th>Usuario</Th>
-              <Th>Acao</Th>
-              <Th>Entidade</Th>
-              <Th>Resumo</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {auditQuery.data.map((event) => (
-              <tr key={event.id}>
-                <Td>{new Date(event.created_at).toLocaleString(appLocalization.locale)}</Td>
-                <Td>{event.actor_name}</Td>
-                <Td>{event.action}</Td>
-                <Td>{event.entity_type}</Td>
-                <Td>{event.summary}</Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      ) : null}
     </section>
   )
 }

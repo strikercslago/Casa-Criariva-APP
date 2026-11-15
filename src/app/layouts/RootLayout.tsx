@@ -1,21 +1,21 @@
 import { Suspense, useMemo, useState } from 'react'
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { LogOut, Menu, ShieldCheck } from 'lucide-react'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { LogOut, ShieldCheck } from 'lucide-react'
 import casaCriativaLogo from '@/assets/brand/casa-criativa-logo.png'
 import { routePreloaders } from '@/app/router/routePreloaders'
 import { canAccessModule } from '@/app/auth/permissions'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
-import { IconButton } from '@/shared/components/ui/IconButton'
-import { Overlay } from '@/shared/components/ui/Overlay'
+import { MobileBottomNavigation } from '@/shared/components/navigation/MobileBottomNavigation'
 import { RouteSkeleton } from '@/shared/components/feedback/RouteSkeleton'
 import { OfflineBanner } from '@/shared/components/feedback/OfflineBanner'
 import { navigationItems } from '@/shared/constants/navigation'
 import { cn } from '@/shared/utils/cn'
 
 const preloadByPath = new Map([
-  ['/', routePreloaders.dashboard],
+  ['/', routePreloaders.mainMenu],
+  ['/visao-geral', routePreloaders.dashboard],
   ['/agenda', routePreloaders.agenda],
   ['/alunos', routePreloaders.students],
   ['/responsaveis', routePreloaders.guardians],
@@ -24,20 +24,14 @@ const preloadByPath = new Map([
   ['/mensalidades', routePreloaders.billing],
   ['/financeiro', routePreloaders.finance],
   ['/eventos', routePreloaders.events],
-  ['/materiais', routePreloaders.materials],
   ['/ideias', routePreloaders.ideas],
-  ['/relatorios', routePreloaders.reports],
   ['/configuracoes', routePreloaders.settings],
 ])
 
 export function RootLayout() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSigningOut, setIsSigningOut] = useState(false)
   const auth = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-  const mobileItems = navigationItems.filter((item) => ['/', '/agenda', '/alunos', '/frequencia'].includes(item.path) && canAccessModule(auth.roles, item.module))
-  const isMoreActive = !mobileItems.some((item) => item.path === location.pathname)
   const statusLabel = useMemo(() => {
     if (auth.roles.includes('owner')) {
       return 'Owner'
@@ -66,28 +60,20 @@ export function RootLayout() {
       <OfflineBanner />
       <header className="brand-header sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
         <div className="flex h-16 items-center gap-2 px-4 lg:gap-3 lg:px-6">
-          <IconButton
-            className="lg:hidden"
-            label="Abrir menu"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu className="h-5 w-5" aria-hidden />
-          </IconButton>
-
-          <div className="flex min-w-0 items-center gap-3">
+          <NavLink to="/" aria-label="Casa Criativa — Menu Principal" className="flex min-w-0 items-center gap-2">
             <img src={casaCriativaLogo} alt="Logo oficial da Casa Criativa" className="h-14 w-14 shrink-0 rounded-xl object-contain" />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">Casa Criativa</p>
-              <p className="truncate text-xs text-muted-foreground">Gestão escolar</p>
+              <p className="truncate text-xs text-muted-foreground">Gestão Escolar</p>
             </div>
-          </div>
+          </NavLink>
 
           <div className="ml-auto" />
 
-          <Badge tone={auth.roles.length > 0 ? 'primary' : 'warning'}>{statusLabel}</Badge>
+          <span className="hidden sm:inline-flex"><Badge tone={auth.roles.length > 0 ? 'primary' : 'warning'}>{statusLabel}</Badge></span>
           <ShieldCheck className="hidden h-5 w-5 text-primary sm:block" aria-hidden />
           <Button
-            className="hidden sm:inline-flex"
+            className="shrink-0"
             isLoading={isSigningOut}
             leftIcon={<LogOut className="h-4 w-4" aria-hidden />}
             onClick={handleSignOut}
@@ -100,19 +86,8 @@ export function RootLayout() {
 
       <div className="flex">
         <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 border-r border-border bg-surface lg:block">
-          <SidebarContent
-            isSigningOut={isSigningOut}
-            onSignOut={handleSignOut}
-          />
+          <SidebarContent />
         </aside>
-
-        <Overlay isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} side="right" title="Explorar Casa Criativa">
-              <SidebarContent
-                isSigningOut={isSigningOut}
-                onNavigate={() => setIsMobileMenuOpen(false)}
-                onSignOut={handleSignOut}
-              />
-        </Overlay>
 
         <main className="app-main min-w-0 flex-1 px-4 py-5 md:px-6 lg:px-8">
           <Suspense fallback={<RouteSkeleton />}>
@@ -120,30 +95,12 @@ export function RootLayout() {
           </Suspense>
         </main>
       </div>
-      <nav className="mobile-navigation fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-surface lg:hidden" aria-label="Atalhos principais">
-        {mobileItems.map((item) => (
-          <NavLink key={item.path} to={item.path} end={item.path === '/'} onFocus={() => void preloadByPath.get(item.path)?.()}
-            className={({ isActive }) => cn('flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold', isActive ? 'text-primary' : 'text-muted-foreground')}>
-            {({ isActive }) => <><span className={cn('flex h-7 w-12 items-center justify-center rounded-full', isActive && 'bg-primary/10')}><item.icon className="h-5 w-5" aria-hidden /></span><span>{item.path === '/' ? 'Início' : item.path === '/frequencia' ? 'Chamada' : item.label}</span></>}
-          </NavLink>
-        ))}
-        <button type="button" aria-expanded={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(true)} className={cn('flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold', isMoreActive ? 'text-primary' : 'text-muted-foreground')}>
-          <span className={cn('flex h-7 w-12 items-center justify-center rounded-full', isMoreActive && 'bg-primary/10')}><Menu className="h-5 w-5" aria-hidden /></span>Mais
-        </button>
-      </nav>
+      <MobileBottomNavigation />
     </div>
   )
 }
 
-function SidebarContent({
-  isSigningOut,
-  onNavigate,
-  onSignOut,
-}: {
-  isSigningOut: boolean
-  onNavigate?: () => void
-  onSignOut: () => void
-}) {
+function SidebarContent() {
   const auth = useAuth()
   const visibleItems = navigationItems.filter((item) => canAccessModule(auth.roles, item.module))
 
@@ -161,7 +118,6 @@ function SidebarContent({
             }
             end={item.path === '/'}
             key={item.path}
-            onClick={onNavigate}
             onFocus={() => void preloadByPath.get(item.path)?.()}
             onMouseEnter={() => void preloadByPath.get(item.path)?.()}
             to={item.path}
@@ -171,15 +127,6 @@ function SidebarContent({
           </NavLink>
         ))}
       </div>
-      <Button
-        className="mt-3 w-full justify-start sm:hidden"
-        isLoading={isSigningOut}
-        leftIcon={<LogOut className="h-4 w-4" aria-hidden />}
-        onClick={onSignOut}
-        variant="secondary"
-      >
-        Sair
-      </Button>
     </nav>
   )
 }

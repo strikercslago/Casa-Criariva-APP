@@ -7,7 +7,7 @@ Authorization must exist in three layers: RLS, RPC/Edge Function checks and UI r
 | Module | Owner | Admin | Teacher |
 | --- | --- | --- | --- |
 | Dashboard | CRUD | READ | LIMITED |
-| Alunos | CRUD | CRUD | READ |
+| Alunos | CRUD | CRUD | OPERATIONAL |
 | Responsaveis | CRUD | CRUD | - |
 | Turmas | CRUD | CRUD | READ |
 | Agenda | CRUD | CRUD | OPERATIONAL |
@@ -15,14 +15,21 @@ Authorization must exist in three layers: RLS, RPC/Edge Function checks and UI r
 | Mensalidades | CRUD | CRUD | - |
 | Financeiro | CRUD | - | - |
 | Eventos | CRUD | CRUD | - |
-| Materiais | CRUD | CRUD | - |
-| Relatorios | CRUD | - | - |
+| Ideias e chamados | CRUD | CRUD | OPERATIONAL (próprios) |
 | Configuracoes | CRUD | READ | READ |
 | Usuarios | OWNER | - | - |
 | Auditoria | OWNER | - | - |
 | Seguranca | OWNER | READ | READ |
 
-Decision: admin can operate mensalidades and payments, but Financeiro Geral and Relatorios financeiros remain owner-only until an explicit business approval changes that boundary.
+Admin can operate mensalidades and payments, but Financeiro Geral remains owner-only.
+Materials and Reports were removed from the frontend. The audit route redirects
+to Settings; the internal audit data and its authorization remain intact.
+
+Teachers can maintain student identity/status and submit basic enrollment only
+after the corresponding SQL migration is applied. They cannot send guardian,
+class or billing-plan data through basic enrollment. Consult
+`STUDENT-LIFECYCLE-REVIEW.md` for deployment prerequisites. Tickets likewise require
+their migration; UI permissions do not prove the remote policies were deployed.
 
 Teacher access is intentionally operational. Teachers can use agenda/class/attendance workflows and see a limited dashboard. They do not get billing, finance, users, audit, materials purchases or settings administration.
 

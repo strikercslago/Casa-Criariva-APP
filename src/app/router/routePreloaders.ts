@@ -1,4 +1,5 @@
 export const routePreloaders = {
+  mainMenu: () => import('@/features/dashboard/pages/MainMenuPage'),
   login: () => import('@/features/auth/pages/LoginPage'),
   dashboard: () => import('@/features/dashboard/pages/DashboardPage'),
   agenda: () => import('@/features/agenda/pages/AgendaPage'),
@@ -9,8 +10,6 @@ export const routePreloaders = {
   billing: () => import('@/features/billing/pages/BillingPage'),
   finance: () => import('@/features/finance/pages/FinancePage'),
   events: () => import('@/features/events/pages/EventsPage'),
-  materials: () => import('@/features/materials/pages/MaterialsPage'),
   ideas: () => import('@/features/ideas/pages/IdeasPage'),
-  reports: () => import('@/features/reports/pages/ReportsPage'),
   settings: () => import('@/features/settings/pages/SettingsPage'),
 }

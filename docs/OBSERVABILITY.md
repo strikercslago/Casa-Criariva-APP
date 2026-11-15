@@ -19,4 +19,13 @@ Use the Supabase dashboard for:
 
 ## Slow Paths
 
-Monitor Dashboard, Relatorios, Financeiro, Mensalidades, Agenda and Estoque first. These routes depend on aggregation RPCs and should be checked after every migration that changes joins, indexes or policy helpers.
+Monitor Dashboard, Financeiro, Mensalidades and Agenda first. These routes depend
+on aggregation RPCs and should be checked after migrations affecting joins,
+indexes or policy helpers. Materials and Reports are no longer frontend routes.
+
+Auth error diagnostics retain name, code, status and the presence of a message,
+but do not forward raw error messages that may contain email addresses or secrets.
+Production `reportError` currently has no remote sink: this is not operational
+alerting. Establish latency, error, traffic and resource baselines before choosing
+an alerting service. No production performance or capacity measurements were
+available during the November audit.

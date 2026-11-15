@@ -9,7 +9,7 @@ import {
   updateStudentStatus,
 } from '@/features/students/api/studentsApi'
 import { studentsKeys } from '@/features/students/hooks/studentsKeys'
-import { dashboardKeys, reportsKeys } from '@/features/reports/hooks/reportsKeys'
+import { dashboardKeys } from '@/features/dashboard/hooks/dashboardKeys'
 import type { StudentFormValues } from '@/features/students/schemas/studentSchema'
 import type { StudentListFilters, StudentRow } from '@/features/students/types/studentTypes'
 
@@ -41,6 +41,7 @@ export function useCreateStudent() {
     onSuccess: (student) => {
       queryClient.setQueryData(studentsKeys.detail(student.id), student)
       void queryClient.invalidateQueries({ queryKey: studentsKeys.lists() })
+      void queryClient.invalidateQueries({ queryKey: studentsKeys.counts() })
     },
   })
 }
@@ -84,6 +85,6 @@ export function useChangeStudentStatus() {
 function updateStudentsCache(queryClient: ReturnType<typeof useQueryClient>, student: StudentRow) {
   queryClient.setQueryData(studentsKeys.detail(student.id), student)
   void queryClient.invalidateQueries({ queryKey: studentsKeys.lists() })
+  void queryClient.invalidateQueries({ queryKey: studentsKeys.counts() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.operationsRoot() })
-  void queryClient.invalidateQueries({ queryKey: reportsKeys.all })
 }

@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw, LayoutGrid, List, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
@@ -11,7 +11,8 @@ import { Pagination } from '@/shared/components/ui/Pagination'
 import { EnrollmentWizard } from '@/features/students/components/EnrollmentWizard'
 import { StudentDetailDrawer } from '@/features/students/components/StudentDetailDrawer'
 import { StudentFilters } from '@/features/students/components/StudentFilters'
-import { StudentsList } from '@/features/students/components/StudentsList'
+import { StudentDirectory, type StudentView } from '@/features/students/components/StudentDirectory'
+import { StudentIndicators } from '@/features/students/components/StudentIndicators'
 import { StudentsSkeleton } from '@/features/students/components/StudentsSkeleton'
 import { getStudent } from '@/features/students/api/studentsApi'
 import { useDebouncedValue } from '@/features/students/hooks/useDebouncedValue'
@@ -24,6 +25,9 @@ const PAGE_SIZE = 20
 export default function StudentsPage() {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [view, setView] = useState<StudentView>(() => {
+    try { return sessionStorage.getItem('students-view') === 'list' ? 'list' : 'cards' } catch { return 'cards' }
+  })
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<StudentStatusFilter>('all')
   const [page, setPage] = useState(1)
@@ -80,33 +84,19 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <PageHeader
+    <div className="students-page space-y-4">
+      <div className="student-heading"><Users aria-hidden className="student-heading-icon" /><PageHeader
         compact
         title="Alunos"
-        description="Encontre um aluno e acompanhe sua trajetória."
+        description="Visualize seus alunos de forma prática."
         actions={
           <Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setIsCreateOpen(true)}>
             Novo aluno
           </Button>
         }
-      />
+      /></div>
 
-      <section className="list-toolbar">
-        <div className="list-count">
-          <p className="whitespace-nowrap text-xl font-bold tabular-nums text-foreground">{studentsQuery.isFetching ? "—" : totalCount}</p>
-          <p className="text-sm text-muted-foreground">alunos encontrados</p>
-        </div>
-
-        <Button
-          isLoading={studentsQuery.isFetching}
-          leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />}
-          onClick={() => void studentsQuery.refetch()}
-          variant="secondary"
-        >
-          Atualizar
-        </Button>
-      </section>
+      <StudentIndicators />
 
       <StudentFilters
         onSearchChange={handleSearchChange}
@@ -114,9 +104,21 @@ export default function StudentsPage() {
         search={search}
         status={status}
       />
-      <p className="student-status-help rounded bg-surface px-3 py-2 text-sm text-muted-foreground">
-        Abra a ficha para ativar ou desativar um aluno. Em <strong>Arquivados</strong>, use <strong>Restaurar aluno</strong> para recuperá-lo.
-      </p>
+      <div className="student-view-switch" role="group" aria-label="Visualização dos alunos">
+        {([{ value: 'cards', label: 'Cartões', Icon: LayoutGrid }, { value: 'list', label: 'Lista', Icon: List }] as const).map(({ value, label, Icon }) => (
+          <button key={value} type="button" aria-pressed={view === value} onClick={() => {
+            setView(value)
+            try { sessionStorage.setItem('students-view', value) } catch { /* Session storage may be unavailable. */ }
+          }}><Icon className="h-4 w-4" aria-hidden />{label}</button>
+        ))}
+      </div>
+      <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground" aria-live="polite">
+        <span>{studentsQuery.isFetching ? 'Atualizando…' : `${totalCount} ${totalCount === 1 ? 'aluno encontrado' : 'alunos encontrados'}`}</span>
+        <Button variant="ghost" leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />} isLoading={studentsQuery.isFetching} onClick={() => {
+          void studentsQuery.refetch()
+          void queryClient.invalidateQueries({ queryKey: studentsKeys.counts() })
+        }}>Atualizar</Button>
+      </div>
 
       {isInitialLoading ? <StudentsSkeleton /> : null}
 
@@ -148,11 +150,8 @@ export default function StudentsPage() {
 
       {!isInitialLoading && !studentsQuery.isError && students.length > 0 ? (
         <div className="space-y-3">
-          <StudentsList
-            onOpenStudent={handleOpenStudent}
-            onPrefetchStudent={handlePrefetchStudent}
-            students={students}
-          />
+          <StudentDirectory view={view} students={students} onOpen={handleOpenStudent}
+            onPrefetch={handlePrefetchStudent} onActions={(id) => setSearchParams({ aluno: id, opcoes: '1' })} />
           <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Pagina {page} de {totalPages}, {totalCount} aluno{totalCount === 1 ? '' : 's'}.
@@ -173,7 +172,7 @@ export default function StudentsPage() {
         onCompleted={handleEnrollmentCompleted}
       />
 
-      <StudentDetailDrawer onClose={handleCloseStudent} studentId={selectedStudentId} />
+      <StudentDetailDrawer onClose={handleCloseStudent} studentId={selectedStudentId} showActions={searchParams.get('opcoes') === '1'} />
     </div>
   )
 }

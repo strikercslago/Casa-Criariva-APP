@@ -6,7 +6,7 @@ import {
   updateSessionStatus,
 } from '@/features/agenda/api/agendaApi'
 import { agendaKeys } from '@/features/agenda/hooks/agendaKeys'
-import { dashboardKeys, reportsKeys } from '@/features/reports/hooks/reportsKeys'
+import { dashboardKeys } from '@/features/dashboard/hooks/dashboardKeys'
 import type { AttendanceSaveRecord } from '@/features/agenda/types/agendaTypes'
 import { student360Keys } from '@/features/students/hooks/student360Keys'
 
@@ -60,5 +60,4 @@ function invalidateSession(queryClient: ReturnType<typeof useQueryClient>, sessi
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.todayRoot() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.attentionRoot() })
   void queryClient.invalidateQueries({ queryKey: dashboardKeys.operationsRoot() })
-  void queryClient.invalidateQueries({ queryKey: reportsKeys.all })
 }

@@ -19,7 +19,6 @@ type AuthDiagnosticDetails = {
   hasSession?: boolean
   hasUser?: boolean
   method?: string
-  message?: string
   name?: string
   path?: string
   status?: string | number
@@ -37,7 +36,7 @@ export function sanitizeAuthError(error: unknown): AuthDiagnosticDetails {
 
   if (!isRecord(error)) {
     return {
-      message: String(error),
+      hasMessage: typeof error === 'string' && error.length > 0,
     }
   }
 
@@ -47,10 +46,6 @@ export function sanitizeAuthError(error: unknown): AuthDiagnosticDetails {
 
   if (typeof error.name === 'string') {
     details.name = error.name
-  }
-
-  if (typeof error.message === 'string') {
-    details.message = error.message
   }
 
   if (typeof error.status === 'string' || typeof error.status === 'number') {

@@ -39,6 +39,7 @@ describe('StudentFilters', () => {
     render(<ControlledFilters onSearchChange={onSearchChange} onStatusChange={onStatusChange} />)
 
     await user.type(screen.getByRole('searchbox', { name: 'Buscar aluno' }), 'Ana')
+    await user.click(screen.getByRole('button', { name: 'Filtros de alunos' }))
     await user.click(screen.getByRole('tab', { name: 'Arquivados' }))
 
     expect(onSearchChange).toHaveBeenLastCalledWith('Ana')

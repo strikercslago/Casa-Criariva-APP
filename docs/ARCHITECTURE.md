@@ -27,7 +27,12 @@ Remote data must use TanStack Query. Local UI state should stay close to the com
 
 ## Current Scope
 
-The current real domain modules are Students, Student 360, Guardians, Classes, Agenda/Attendance, Billing/Payments, Finance, Events, Materials/Inventory, Dashboard and Reports. Ideas remain intentionally outside this phase.
+The current domains are Students, Student 360, Guardians, Classes, Agenda/Attendance,
+Billing/Payments, Finance, Events, Dashboard, Ideas/tickets and Settings. `/` is
+the navigation menu and `/visao-geral` retains the operational dashboard. Materials
+and Reports have been removed from the frontend. Their sections below describe
+historical database architecture, not available UI. Tickets require the migration
+documented in `FEEDBACK-TICKETS.md`; repository presence does not prove deployment.
 
 ## Auth Flow
 

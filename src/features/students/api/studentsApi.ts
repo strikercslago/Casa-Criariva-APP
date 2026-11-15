@@ -20,7 +20,7 @@ const STUDENTS_TIMEOUT_MS = 12_000
 export async function findStudentMatches(name: string): Promise<StudentListItem[]> {
   const normalized = name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR')
   if (normalized.length < 2) return []
-  const result = await listStudents({ page: 1, pageSize: 100, search: name.trim(), status: 'all' })
+  const result = await listStudents({ page: 1, pageSize: 100, search: name.trim(), status: 'all' }, 'name')
   return result.students.filter((student) => student.full_name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR') === normalized)
 }
 const STUDENT_LIST_SELECT = 'id, full_name, preferred_name, photo_path, birth_date, enrollment_date, status'
@@ -48,15 +48,28 @@ function toPayload(values: StudentFormValues) {
   }
 }
 
-export async function listStudents(filters: StudentListFilters): Promise<StudentListResult> {
+export async function getStudentCounts() {
+  const results = await Promise.all((['active', 'inactive', 'archived'] as const).map(async (status) => {
+    const { count, error } = await withTimeout(
+      getClient().from('students').select('id', { count: 'exact', head: true }).eq('status', status),
+      STUDENTS_TIMEOUT_MS, createTimeoutError,
+    )
+    if (error) throw mapStudentsError(error)
+    return count ?? 0
+  }))
+  return { active: results[0], inactive: results[1], archived: results[2], all: results.reduce((sum, count) => sum + count, 0) }
+}
+
+export async function listStudents(filters: StudentListFilters, searchScope: 'directory' | 'name' = 'directory'): Promise<StudentListResult> {
   const supabase = getClient()
   const from = (filters.page - 1) * filters.pageSize
   const to = from + filters.pageSize - 1
   const search = filters.search.trim()
 
+  const listSelect: string = `${STUDENT_LIST_SELECT}, enrollments(status,class:classes(name,class_schedules(start_time)))${search && searchScope === 'directory' ? ', matching_classes:enrollments(class:classes!inner(id)), matching_guardians:student_guardians(guardian:guardians!inner(id))' : ''}`
   let query = supabase
     .from('students')
-    .select(STUDENT_LIST_SELECT, { count: 'exact' })
+    .select(listSelect, { count: 'exact' })
     .order('full_name', { ascending: true })
     .order('id', { ascending: true })
     .range(from, to)
@@ -65,11 +78,20 @@ export async function listStudents(filters: StudentListFilters): Promise<Student
     query = query.eq('status', filters.status)
   }
 
-  if (search.length > 0) {
+  if (search.length > 0 && searchScope === 'name') {
     query = query.ilike('full_name', `%${search}%`)
+  } else if (search.length > 0) {
+    // Quote the root OR value so punctuation cannot become PostgREST filter syntax.
+    const pattern = `%${search.replace(/[\\%_*]/g, '\\$&')}%`
+    const quotedPattern = `"${pattern.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
+    query = query
+      .ilike('matching_classes.class.name', pattern)
+      .eq('matching_classes.status', 'active')
+      .ilike('matching_guardians.guardian.full_name', pattern)
+      .or(`full_name.ilike.${quotedPattern},matching_classes.not.is.null,matching_guardians.not.is.null`)
   }
 
-  const { data, error, count } = await withTimeout(query, STUDENTS_TIMEOUT_MS, createTimeoutError)
+  const { data, error, count } = await withTimeout(query.returns<StudentListItem[]>(), STUDENTS_TIMEOUT_MS, createTimeoutError)
 
   if (error) {
     throw mapStudentsError(error)

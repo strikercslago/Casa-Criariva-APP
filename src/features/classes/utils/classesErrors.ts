@@ -20,7 +20,13 @@ export function mapClassesError(error: ErrorLike) {
   }
 
   if (code === '23505') {
-    return new AppError('validation', 'Este aluno ja possui uma matricula ativa nesta turma.', error.message)
+    if (message.includes('enrollments_active_student_class_uidx')) {
+      return new AppError('validation', 'Este aluno ja possui uma matricula ativa nesta turma.', error.message)
+    }
+    if (message.includes('class_sessions_')) {
+      return new AppError('validation', 'Os horários desta turma entram em conflito com aulas já registradas. A alteração não foi salva.', error.message)
+    }
+    return new AppError('validation', 'Há um conflito com um registro existente. A alteração não foi salva.', error.message)
   }
 
   if (code === '23514' || code === '22P02' || message.includes('capacity')) {
