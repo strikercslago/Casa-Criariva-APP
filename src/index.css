@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: 240 33% 98%;
-  --foreground: 231 55% 20%;
+  --background: 280 38% 98%;
+  --foreground: 269 48% 20%;
   --surface: 0 0% 100%;
-  --muted: 210 20% 94%;
-  --muted-foreground: 218 13% 44%;
-  --border: 214 18% 86%;
-  --primary: 230 65% 35%;
+  --muted: 275 35% 96%;
+  --muted-foreground: 270 12% 41%;
+  --border: 274 28% 88%;
+  --primary: 280 69% 36%;
   --primary-foreground: 0 0% 100%;
   --accent: 43 98% 54%;
   --accent-foreground: 219 34% 16%;

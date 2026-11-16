@@ -38,7 +38,7 @@ async function fixture(run: (context: { row: Json; states: Map<string, Json>; ca
     if (url.hostname === 'www.googleapis.com') return Promise.resolve(provider(url, options))
     if (url.pathname.endsWith('/auth/v1/user')) return Promise.resolve(response({ id: actor }))
     if (url.pathname.endsWith('/profiles')) return Promise.resolve(response({ is_active: true }))
-    if (url.pathname.endsWith('/user_roles')) return Promise.resolve(response([{ role }]))
+    if (url.pathname.endsWith('/user_roles')) return Promise.resolve(response([{ role: url.searchParams.get('user_id') === `eq.${actor}` ? role : 'owner' }]))
     if (url.pathname.endsWith('/google_calendar_connection')) {
       if (options.method === 'PATCH') { Object.assign(row, payload); return Promise.resolve(response([{ id: 'school' }])) }
       return Promise.resolve(response(row))
@@ -82,11 +82,18 @@ Deno.test('OAuth consumes state, stores encrypted tokens, and rejects replay', (
   assert(calls.filter((call) => call.url.hostname === 'oauth2.googleapis.com').length === exchanges)
 }))
 
-Deno.test('teacher can read but cannot connect or mutate events', () => fixture(async ({ setRole, calls }) => {
+Deno.test('teacher can read and create in the shared calendar but cannot administer it', () => fixture(async ({ setRole, calls, row, setProvider }) => {
   setRole('teacher')
+  row.connected_by = '33333333-3333-4333-8333-333333333333'
   assert((await request('status')).status === 200)
-  for (const action of ['connect', 'create', 'update', 'delete', 'disconnect', 'select-calendar', 'sync']) assert((await request(action)).status === 403)
+  for (const action of ['connect', 'calendars', 'update', 'delete', 'disconnect', 'select-calendar', 'sync']) assert((await request(action)).status === 403)
   assert(!calls.some((call) => call.url.hostname.includes('googleapis')))
+  setProvider((_url, options) => response({ id: 'created-event', ...JSON.parse(String(options.body)) }))
+  const created = await request('create', { requestId: '44444444-4444-4444-8444-444444444444', event: { summary: 'Reunião da escola', start: '2026-11-16T09:00:00-03:00', end: '2026-11-16T10:00:00-03:00', timeZone: 'America/Sao_Paulo' } })
+  assert(created.status === 200)
+  assert(calls.some((call) => call.url.pathname === '/calendar/v3/calendars/school-calendar/events' && call.options.method === 'POST'))
+  setRole('guardian')
+  assert((await request('create')).status === 403)
 }))
 
 Deno.test('anonymous and invalid origin requests are rejected', () => fixture(async () => {

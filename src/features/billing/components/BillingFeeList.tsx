@@ -20,7 +20,7 @@ type BillingFeeListProps = {
 export function BillingFeeList({ fees, onOpenFee, onRegisterPayment }: BillingFeeListProps) {
   return (
     <div className="responsive-records grid gap-3">
-      <div className="records-table rounded-md border border-border bg-surface shadow-subtle">
+      <div className="records-table ui-surface rounded-md border border-border bg-surface shadow-subtle">
         <div className="grid grid-cols-[minmax(180px,1.25fr)_120px_120px_120px_120px_120px_minmax(160px,1fr)_180px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Aluno</span>
           <span>Referencia</span>
@@ -80,7 +80,7 @@ export function BillingFeeList({ fees, onOpenFee, onRegisterPayment }: BillingFe
 
       <div className="records-cards gap-3">
         {fees.map((fee) => (
-          <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={fee.monthly_fee_id}>
+          <article className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle" key={fee.monthly_fee_id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="break-words font-semibold text-foreground">{fee.student_name}</h2>

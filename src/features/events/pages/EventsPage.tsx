@@ -1,3 +1,4 @@
+import { CalendarHeart as PageIcon } from 'lucide-react'
 import { CalendarClock, Plus, RefreshCw, UserPlus } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
@@ -166,7 +167,7 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         actions={
           <div className="flex flex-wrap gap-2">
             <Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setIsEventDrawerOpen(true)}>
@@ -191,7 +192,7 @@ export default function EventsPage() {
         title="Eventos"
       />
 
-      <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="grid gap-3 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <div className="grid gap-2 lg:grid-cols-[minmax(220px,1fr)_170px_170px]">
           <SearchInput label="Buscar eventos" onChange={(event) => setEventSearch(event.target.value)} placeholder="Buscar evento" value={eventSearch} />
           <Select label="Status" onChange={(event) => setEventStatus(event.target.value as EventStatus | 'all')} value={eventStatus}>
@@ -233,7 +234,7 @@ export default function EventsPage() {
       </MainPanel>
 
       {selectedEvent ? (
-        <section className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-subtle">
+        <section className="grid gap-4 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -364,7 +365,7 @@ function SummaryItem({
         : 'border-border bg-background text-foreground'
 
   return (
-    <div className={`metric-tile ${toneClass}`}>
+    <div data-tone={tone} className={`metric-tile ${toneClass}`}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold">{value}</dd>
     </div>
@@ -387,7 +388,7 @@ function MainPanel({
   title: string
 }) {
   if (isLoading) {
-    return <div className="h-72 rounded-md border border-border bg-surface shadow-subtle" />
+    return <div className="h-72 ui-surface rounded-md border border-border bg-surface shadow-subtle" />
   }
 
   if (isError) {
@@ -411,7 +412,7 @@ function PagedFooter({
   unit: string
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground">
         Pagina {page} de {totalPages}, {totalCount} {unit}
         {totalCount === 1 ? '' : 's'}.

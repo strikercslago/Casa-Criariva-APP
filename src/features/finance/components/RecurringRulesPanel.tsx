@@ -46,7 +46,7 @@ export function RecurringRulesPanel({ categories, referenceMonth, rules }: Recur
   }
 
   return (
-    <section className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+    <section className="ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-semibold text-foreground">Recorrencias</h2>

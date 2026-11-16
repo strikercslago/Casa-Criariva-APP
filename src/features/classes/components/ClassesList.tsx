@@ -16,7 +16,7 @@ export function ClassesList({ classes, onOpenClass, onPrefetchClass }: ClassesLi
     <div className="grid gap-3">
       {classes.map((classItem) => (
         <article
-          className="rounded-md border border-border bg-surface p-4 shadow-subtle transition-colors hover:bg-muted/40"
+          className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle transition-colors hover:bg-muted/40"
           key={classItem.class_id}
           onMouseEnter={() => onPrefetchClass?.(classItem.class_id)}
         >

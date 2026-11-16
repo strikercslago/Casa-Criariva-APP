@@ -1,3 +1,4 @@
+import { ChartNoAxesCombined as PageIcon } from 'lucide-react'
 import { Plus, RefreshCw } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
@@ -164,7 +165,7 @@ export default function FinancePage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         actions={
           <div className="flex flex-wrap gap-2">
             <Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={openCreateDrawer}>
@@ -190,7 +191,7 @@ export default function FinancePage() {
         title="Financeiro"
       />
 
-      <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="grid gap-3 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <MonthNavigator value={referenceMonth} onChange={changeMonth} onPrevious={() => changeMonth(addMonths(referenceMonth, -1))} onNext={() => changeMonth(addMonths(referenceMonth, 1))} onToday={() => changeMonth(currentMonth)} />
 
         <dl className="metric-grid">
@@ -368,7 +369,7 @@ function SummaryItem({
         : 'border-border bg-background text-foreground'
 
   return (
-    <div className={`metric-tile ${toneClass}`}>
+    <div data-tone={tone} className={`metric-tile ${toneClass}`}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold">{value}</dd>
     </div>
@@ -391,7 +392,7 @@ function MainPanel({
   title: string
 }) {
   if (isLoading) {
-    return <div className="h-72 rounded-md border border-border bg-surface shadow-subtle" />
+    return <div className="h-72 ui-surface rounded-md border border-border bg-surface shadow-subtle" />
   }
 
   if (isError) {
@@ -415,7 +416,7 @@ function PagedFooter({
   unit: string
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground">
         Pagina {page} de {totalPages}, {totalCount} {unit}
         {totalCount === 1 ? '' : 's'}.

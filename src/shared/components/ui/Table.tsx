@@ -28,7 +28,7 @@ export function Table({ className, children, ...props }: TableHTMLAttributes<HTM
     }))
   })
   return (
-    <div className="w-full min-w-0 rounded-md border border-border bg-surface">
+    <div className="w-full min-w-0 ui-surface rounded-md border border-border bg-surface">
       <table className={cn('responsive-table w-full border-collapse text-sm', className)} {...props}>
         {labeledSections}
       </table>

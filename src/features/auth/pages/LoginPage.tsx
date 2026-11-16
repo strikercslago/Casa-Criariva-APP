@@ -46,7 +46,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen bg-[#f8faf8] text-foreground lg:grid-cols-[1.05fr_0.95fr]">
+    <main className="login-page grid min-h-screen bg-[#f8faf8] text-foreground lg:grid-cols-[1.05fr_0.95fr]">
       <section className="relative hidden overflow-hidden border-r border-[#d9e4df] bg-[#fffdf8] px-10 py-10 lg:flex lg:flex-col lg:justify-between">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#19b7c7]/18 blur-3xl" />
@@ -88,7 +88,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <p className="text-base font-semibold text-[#07194f]">Casa Criativa Gestao</p>
+            <p className="text-base font-semibold text-foreground">Casa Criativa Gestao</p>
             <p className="text-sm text-[#4d6075]">Rotina segura para um atelie vivo</p>
           </div>
         </div>
@@ -103,12 +103,12 @@ export default function LoginPage() {
               width="144"
             />
           </div>
-          <p className="text-sm font-semibold uppercase tracking-normal text-[#237f77]">Acesso administrativo</p>
-          <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight text-[#07194f]">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">Acesso administrativo</p>
+          <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight text-foreground">
             Gestao leve para uma rotina criativa, organizada e acolhedora.
           </h1>
           <p className="mt-5 max-w-lg text-base leading-7 text-[#40536a]">
-            Acompanhe aulas, alunos, mensalidades e materiais com carinho pela rotina e seguranca para os dados da escola.
+            Acompanhe aulas, alunos, mensalidades e eventos com carinho pela rotina e seguranca para os dados da escola.
           </p>
           <div className="mt-7 flex flex-wrap gap-2">
             {[
@@ -151,7 +151,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <p className="font-semibold text-[#07194f]">Casa Criativa Gestao</p>
+              <p className="font-semibold text-foreground">Casa Criativa Gestao</p>
               <p className="text-sm text-muted-foreground">Acesso administrativo</p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function LoginPage() {
               ) : null}
 
               <Button
-                className="mt-1 h-11 w-full border-[#248c83] bg-[#248c83] hover:bg-[#1d776f] active:bg-[#1b6d66]"
+                className="mt-1 h-11 w-full"
                 isLoading={isSubmitting}
                 rightIcon={<ArrowRight className="h-4 w-4" aria-hidden />}
                 type="submit"

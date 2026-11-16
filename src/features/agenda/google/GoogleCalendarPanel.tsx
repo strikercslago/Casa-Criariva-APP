@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, ExternalLink, Plus, RefreshCw } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, ExternalLink, Plus, RefreshCw } from 'lucide-react'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { Button } from '@/shared/components/ui/Button'
 import { IconButton } from '@/shared/components/ui/IconButton'
@@ -19,6 +19,7 @@ const rootKey = ['google-calendar'] as const
 export default function GoogleCalendarPanel() {
   const { roles } = useAuth()
   const manage = roles.some((role) => role === 'owner' || role === 'admin')
+  const canCreate = manage || roles.includes('teacher')
   const client = useQueryClient()
   const status = useQuery({ queryKey: [...rootKey, 'status'], queryFn: () => calendarRequest<CalendarStatus>('status'),
     enabled: googleCalendarEnabled, retry: false, staleTime: 30000,
@@ -75,7 +76,7 @@ export default function GoogleCalendarPanel() {
   }
   const callbackResult = new URLSearchParams(window.location.search).get('google')
   return <div className="space-y-4">
-    <PageHeader title="Agenda" description="Compromissos da escola conectados ao Google Calendar." />
+    <PageHeader icon={CalendarDays} title="Agenda" description="Compromissos da escola conectados ao Google Calendar." />
     {!googleCalendarEnabled ? <p className="rounded-xl border border-border bg-surface p-4">A conexão com Google Calendar está em preparação. As aulas e a frequência continuam disponíveis na aba Aulas.</p> : <>
       {callbackResult === 'error' || callbackResult === 'cancelled' ? <p role="alert" className="rounded bg-muted p-3">{callbackResult === 'cancelled' ? 'A autorização foi cancelada.' : 'Não foi possível concluir a conexão. Tente conectar novamente.'}</p> : null}
       <section className="space-y-3 rounded-xl border border-border bg-surface p-4" aria-label="Conexão Google Calendar">
@@ -103,7 +104,7 @@ export default function GoogleCalendarPanel() {
         <section className="space-y-3 rounded-xl border border-border bg-surface p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Button variant="secondary" leftIcon={<RefreshCw className="h-4 w-4" />} isLoading={pending || events.isFetching} onClick={() => manage ? void action('sync') : void refresh()}>Atualizar compromissos</Button>
-            {manage ? <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setEditing(null)}>Novo compromisso</Button> : null}
+            {canCreate ? <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setEditing(null)}>Novo compromisso</Button> : null}
           </div>
           <div className="grid grid-cols-[48px_minmax(0,1fr)_48px] gap-2">
             <IconButton label="Período anterior do Google" onClick={() => move(-1)}><ChevronLeft className="h-4 w-4" /></IconButton>

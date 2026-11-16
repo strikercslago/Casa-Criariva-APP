@@ -19,7 +19,7 @@ type GuardiansFiltersProps = {
 
 export function GuardiansFilters({ onRoleChange, onSearchChange, role, search }: GuardiansFiltersProps) {
   return (
-    <section className="grid gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle lg:grid-cols-[minmax(260px,1fr)_auto] lg:items-center">
+    <section className="grid gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle lg:grid-cols-[minmax(260px,1fr)_auto] lg:items-center">
       <label className="grid gap-1.5 text-sm font-medium text-foreground">
         <span>Buscar responsavel</span>
         <span className="relative">

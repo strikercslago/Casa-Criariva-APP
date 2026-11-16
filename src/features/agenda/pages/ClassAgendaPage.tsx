@@ -1,3 +1,4 @@
+import { CalendarDays as PageIcon } from 'lucide-react'
 import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -41,7 +42,7 @@ export default function ClassAgendaPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         compact
         actions={
           <Button
@@ -57,7 +58,7 @@ export default function ClassAgendaPage() {
         title="Agenda"
       />
 
-      <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="grid gap-3 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -162,7 +163,7 @@ function AgendaSkeleton() {
   return (
     <div className="grid gap-3">
       {Array.from({ length: 4 }, (_, index) => (
-        <div className="h-24 rounded-md border border-border bg-surface shadow-subtle" key={index} />
+        <div className="h-24 ui-surface rounded-md border border-border bg-surface shadow-subtle" key={index} />
       ))}
     </div>
   )

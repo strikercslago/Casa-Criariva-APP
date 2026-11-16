@@ -301,7 +301,7 @@ export async function handler(request: Request) {
     if (raw.length > 20000) throw new CalendarError(413, 'size', 'Solicitação muito grande.')
     const body = JSON.parse(raw) as Record<string, unknown>
     const action = text(body.action, 30, true)
-    const actor = await user(db, request, !['status', 'events'].includes(action))
+    const actor = await user(db, request, !['status', 'events', 'create'].includes(action))
     return json(await dispatch(db, action, body, actor))
   } catch (error) {
     // Do not serialize provider responses, authorization codes or credentials into logs/errors.

@@ -1,3 +1,4 @@
+import { CreditCard as PageIcon } from 'lucide-react'
 import { RefreshCw, Wand2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { getUserSafeErrorMessage } from '@/lib/errors/AppError'
@@ -95,7 +96,7 @@ export default function BillingPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         actions={
           <div className="flex flex-wrap gap-2">
             <Button
@@ -122,7 +123,7 @@ export default function BillingPage() {
         title="Mensalidades"
       />
 
-      <section className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="grid gap-3 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <MonthNavigator value={referenceMonth} onChange={changeMonth} onPrevious={() => changeMonth(addMonths(referenceMonth, -1))} onNext={() => changeMonth(addMonths(referenceMonth, 1))} onToday={() => changeMonth(currentMonth)} />
 
         <dl className="metric-grid">
@@ -175,7 +176,7 @@ export default function BillingPage() {
       {!feesQuery.isError && fees.length > 0 ? (
         <div className="space-y-3">
           <BillingFeeList fees={fees} onOpenFee={setSelectedFeeId} onRegisterPayment={setPaymentFee} />
-          <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Pagina {page} de {totalPages}, {totalCount} mensalidade{totalCount === 1 ? '' : 's'}.
             </p>
@@ -197,7 +198,7 @@ export default function BillingPage() {
 
 function SummaryItem({ label, tone, value }: { label: string; tone?: 'danger'; value: string }) {
   return (
-    <div className={tone === 'danger' ? 'metric-tile border-danger/30 bg-danger/5' : 'metric-tile'}>
+    <div data-tone={tone} className={tone === 'danger' ? 'metric-tile border-danger/30 bg-danger/5' : 'metric-tile'}>
       <dt className="text-muted-foreground">{label}</dt>
       <dd className={tone === 'danger' ? 'mt-1 text-2xl font-semibold text-danger' : 'mt-1 text-2xl font-semibold text-foreground'}>{value}</dd>
     </div>
@@ -208,7 +209,7 @@ function BillingSkeleton() {
   return (
     <div className="grid gap-3">
       {Array.from({ length: 5 }, (_, index) => (
-        <div className="h-28 rounded-md border border-border bg-surface shadow-subtle" key={index} />
+        <div className="h-28 ui-surface rounded-md border border-border bg-surface shadow-subtle" key={index} />
       ))}
     </div>
   )

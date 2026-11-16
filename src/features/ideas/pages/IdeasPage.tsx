@@ -1,3 +1,4 @@
+import { MessageCircle as PageIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Lightbulb, Plus, RefreshCw } from 'lucide-react'
@@ -31,19 +32,19 @@ export default function IdeasPage() {
   })
   function refresh() { void queryClient.invalidateQueries({ queryKey: ['feedback'] }) }
   return <div className="space-y-5">
-    <PageHeader title="Ideias e chamados" description="Sua experiência ajuda a melhorar a Casa Criativa." actions={<Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setCreating(true)}>Novo chamado</Button>} />
+    <PageHeader icon={PageIcon} title="Ideias e chamados" description="Sua experiência ajuda a melhorar a Casa Criativa." actions={<Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setCreating(true)}>Novo chamado</Button>} />
     <div className="flex gap-3 rounded-md border border-primary/20 bg-primary/5 p-4">
       <Lightbulb className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />
       <div><p className="font-semibold">Uma ideia, uma dificuldade ou algo que podemos melhorar?</p><p className="mt-1 text-sm text-muted-foreground">Conte em suas palavras. Depois, acompanhe a situação e a resposta da equipe por aqui.</p></div>
     </div>
-    <div className="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface p-3">
+    <div className="flex flex-wrap items-end gap-3 ui-surface rounded-md border border-border bg-surface p-3">
       {canManage ? <Select id="ticket-scope" label="Mostrar" value={mine ? 'mine' : 'all'} onChange={(e) => { setMine(e.target.value === 'mine'); setPage(1) }}><option value="all">Todos os chamados</option><option value="mine">Meus chamados</option></Select> : <p className="py-2 text-sm font-semibold">Meus chamados</p>}
       <Select id="ticket-filter" label="Situação" value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPage(1) }}><option value="all">Todas</option>{Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</Select>
       <Button className="sm:ml-auto" variant="secondary" isLoading={query.isFetching} leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />} onClick={() => void query.refetch()}>Atualizar</Button>
     </div>
     {query.isLoading ? <RouteSkeleton /> : query.isError ? <ErrorState title="Não foi possível carregar os chamados." description={getUserSafeErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : <>
       {!query.data?.tickets.length ? <EmptyState title="Nenhum chamado por aqui." description={status === 'all' ? 'Use Novo chamado para enviar sua primeira sugestão ou relatar um problema.' : 'Não há chamados nesta situação. Experimente outro filtro.'} /> : <div className="grid gap-3 md:grid-cols-2">
-        {query.data.tickets.map((ticket) => <button type="button" key={ticket.id} onClick={() => setSelected(ticket)} className="rounded-md border border-border bg-surface p-4 text-left shadow-subtle transition-colors hover:border-primary/40">
+        {query.data.tickets.map((ticket) => <button type="button" key={ticket.id} onClick={() => setSelected(ticket)} className="ui-surface rounded-md border border-border bg-surface p-4 text-left shadow-subtle transition-colors hover:border-primary/40">
           <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-xs text-muted-foreground">Chamado #{ticket.number} · {categoryLabels[ticket.category]}</span><StatusBadge status={ticket.status} /></div>
           <h2 className="mt-3 break-words font-semibold">{ticket.title}</h2>
           <p className="mt-2 line-clamp-2 whitespace-pre-wrap break-words text-sm text-muted-foreground">{ticket.description}</p>

@@ -1,3 +1,4 @@
+import { LayoutDashboard as PageIcon } from 'lucide-react'
 import { AlertTriangle, ArrowRight, CalendarDays, CreditCard, GraduationCap, RefreshCw, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
@@ -31,7 +32,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         actions={
           <Button
             isLoading={todayQuery.isFetching || attentionQuery.isFetching || operationsQuery.isFetching}
@@ -102,7 +103,7 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <details className="rounded-md border border-border bg-surface p-4"><summary className="cursor-pointer text-base font-semibold">Resumo do mês <span className="ml-1 text-xs font-normal text-muted-foreground">{formatReferenceMonth(referenceMonth)}</span></summary><div className="mt-4 space-y-4">
+      <details className="ui-surface rounded-md border border-border bg-surface p-4"><summary className="cursor-pointer text-base font-semibold">Resumo do mês <span className="ml-1 text-xs font-normal text-muted-foreground">{formatReferenceMonth(referenceMonth)}</span></summary><div className="mt-4 space-y-4">
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]" aria-label="Resumo gerencial">
         <Card>
           <SectionHeader icon={<CreditCard className="h-5 w-5" aria-hidden />} title={`Financeiro - ${formatReferenceMonth(referenceMonth)}`} />
@@ -181,7 +182,7 @@ export default function DashboardPage() {
 function TeacherDashboard() {
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         description="Visao operacional para acompanhar aulas, turmas e chamadas."
         title="Inicio"
       />
@@ -212,7 +213,7 @@ function SectionHeader({ icon, title }: { icon: ReactNode; title: string }) {
 
 function Metric({ label, tone, value }: { label: string; tone?: 'danger' | 'success' | 'warning'; value: ReactNode }) {
   const toneClass = tone === 'success' ? 'text-success' : tone === 'danger' ? 'text-danger' : tone === 'warning' ? 'text-amber-700' : 'text-foreground'
-  return <div className="metric-tile"><dt>{label}</dt><dd className={toneClass}>{value}</dd></div>
+  return <div data-tone={tone} className="metric-tile"><dt>{label}</dt><dd className={toneClass}>{value}</dd></div>
 }
 
 function LinkButton({ to, children }: { children: ReactNode; to: string }) {

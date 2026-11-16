@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import './styles/design-system.css'
 import { GlobalErrorBoundary } from './shared/components/feedback/GlobalErrorBoundary'
 import { reportWebVitals } from './lib/monitoring/webVitals'
 

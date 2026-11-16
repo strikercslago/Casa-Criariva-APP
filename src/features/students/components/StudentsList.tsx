@@ -77,7 +77,7 @@ export function StudentsList({ students, onOpenStudent, onPrefetchStudent }: Stu
       <div className="grid gap-2 md:hidden">
         {students.map((student) => (
           <button key={student.id} type="button" aria-label={`Abrir ${student.full_name}`}
-            className="flex w-full items-center gap-3 rounded-md border border-border bg-surface p-4 text-left shadow-subtle transition-colors active:bg-muted"
+            className="flex w-full items-center gap-3 ui-surface rounded-md border border-border bg-surface p-4 text-left shadow-subtle transition-colors active:bg-muted"
             onFocus={() => onPrefetchStudent?.(student.id)} onClick={() => onOpenStudent(student.id)}>
             <StudentAvatar size="md" student={student} />
             <span className="min-w-0 flex-1">

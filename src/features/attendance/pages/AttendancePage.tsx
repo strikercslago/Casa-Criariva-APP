@@ -1,3 +1,4 @@
+import { ClipboardCheck as PageIcon } from 'lucide-react'
 import {
   CalendarDays,
   Check,
@@ -209,7 +210,7 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-5 pb-20 lg:pb-0">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         compact
         actions={
           <Button
@@ -229,7 +230,7 @@ export default function AttendancePage() {
         title="Frequencia"
       />
 
-      <section className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <section className="grid gap-4 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -433,7 +434,7 @@ function AttendanceSummaryPanel({
   summary: ReturnType<typeof getAttendanceSummary>
 }) {
   return (
-    <section className="grid gap-4 rounded-md border border-border bg-surface p-4 shadow-subtle">
+    <section className="grid gap-4 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -485,7 +486,7 @@ function StudentAttendanceCard({
   const selectedStatus = draft?.status ?? ''
 
   return (
-    <article className="grid gap-3 rounded-md border border-border bg-surface p-4 shadow-subtle">
+    <article className="record-card grid gap-3 ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
       <div className="flex min-w-0 items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <StudentAvatar
@@ -560,7 +561,7 @@ function SaveBar({
   summary: ReturnType<typeof getAttendanceSummary>
 }) {
   return (
-    <footer className="attendance-save-bar sticky bottom-3 z-20 rounded-md border border-border bg-surface/95 p-3 shadow-elevated backdrop-blur lg:static lg:shadow-subtle">
+    <footer className="attendance-save-bar sticky bottom-3 z-20 ui-surface rounded-md border border-border bg-surface/95 p-3 shadow-elevated backdrop-blur lg:static lg:shadow-subtle">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {hasUnsavedChanges
@@ -598,7 +599,7 @@ function Metric({
   }[tone]
 
   return (
-    <div className="rounded-xl bg-background p-2.5">
+    <div data-tone={tone} className="metric-tile">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className={cn('mt-1 text-2xl font-semibold', toneClassName)}>{value}</dd>
     </div>

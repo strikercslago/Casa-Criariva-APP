@@ -1,3 +1,4 @@
+import { UsersRound as PageIcon } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus, RefreshCw } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -73,7 +74,7 @@ export default function GuardiansPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
+      <PageHeader icon={PageIcon}
         actions={
           <Button leftIcon={<Plus className="h-4 w-4" aria-hidden />} onClick={() => setIsCreateOpen(true)}>
             Novo responsavel
@@ -140,7 +141,7 @@ export default function GuardiansPage() {
             onOpenGuardian={openGuardian}
             onPrefetchGuardian={prefetchGuardian}
           />
-          <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Pagina {page} de {totalPages}, {totalCount} responsavel{totalCount === 1 ? '' : 's'}.
             </p>
@@ -173,7 +174,7 @@ function GuardiansSkeleton() {
   return (
     <div className="grid gap-3">
       {Array.from({ length: 5 }, (_, index) => (
-        <div className="h-16 rounded-md border border-border bg-surface shadow-subtle" key={index} />
+        <div className="h-16 ui-surface rounded-md border border-border bg-surface shadow-subtle" key={index} />
       ))}
     </div>
   )

@@ -21,7 +21,7 @@ type FinanceEntryListProps = {
 export function FinanceEntryList({ entries, onCancel, onEdit, onSettle }: FinanceEntryListProps) {
   return (
     <div className="responsive-records grid gap-3">
-      <div className="hidden rounded-md border border-border bg-surface shadow-subtle xl:block">
+      <div className="hidden ui-surface rounded-md border border-border bg-surface shadow-subtle xl:block">
         <div className="grid grid-cols-[110px_minmax(220px,1.4fr)_130px_120px_120px_120px_220px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Tipo</span>
           <span>Lancamento</span>
@@ -71,7 +71,7 @@ export function FinanceEntryList({ entries, onCancel, onEdit, onSettle }: Financ
 
       <div className="grid gap-3 xl:hidden">
         {entries.map((entry) => (
-          <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={entry.entry_id}>
+          <article className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle" key={entry.entry_id}>
             <div className="flex items-start justify-between gap-3">
               <EntryTitle entry={entry} />
               <Badge tone={entry.type === 'income' ? 'success' : 'danger'}>{getEntryTypeLabel(entry.type)}</Badge>

@@ -18,7 +18,7 @@ type EventsListProps = {
 export function EventsList({ events, onSelect, selectedEventId }: EventsListProps) {
   return (
     <div className="responsive-records grid gap-3">
-      <div className="hidden rounded-md border border-border bg-surface shadow-subtle xl:block">
+      <div className="hidden ui-surface rounded-md border border-border bg-surface shadow-subtle xl:block">
         <div className="grid grid-cols-[minmax(240px,1.4fr)_120px_130px_150px_130px_130px_110px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Evento</span>
           <span>Tipo</span>
@@ -57,7 +57,7 @@ export function EventsList({ events, onSelect, selectedEventId }: EventsListProp
 
       <div className="grid gap-3 xl:hidden">
         {events.map((event) => (
-          <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={event.event_id}>
+          <article className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle" key={event.event_id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="break-words font-semibold text-foreground">{event.name}</h2>

@@ -85,10 +85,14 @@ test('creates all-day recurrence, preserves concurrent edits, deletes and discon
   expect(errors).toEqual([])
 })
 
-test('teacher can view Google events but has no management actions', async ({ page }) => {
+test('teacher can create shared events but cannot administer the calendar', async ({ page }) => {
   await setup(page, 'teacher')
   await expect(page.getByText('Reunião existente no Google', { exact: true })).toBeVisible()
-  for (const name of ['Novo compromisso', 'Editar', 'Excluir', 'Selecionar agenda', 'Reconectar Google Calendar']) {
+  await expect(page.getByRole('button', { name: 'Novo compromisso', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Novo compromisso', exact: true }).click()
+  await expect(page.getByLabel('Título', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
+  for (const name of ['Editar', 'Excluir', 'Selecionar agenda', 'Reconectar Google Calendar']) {
     await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0)
   }
   await expect(page.getByRole('link', { name: 'Abrir no Google Calendar' })).toHaveAttribute('rel', 'noopener noreferrer')

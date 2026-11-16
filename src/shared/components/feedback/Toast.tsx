@@ -54,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
           return (
             <div
-              className="rounded-md border border-border bg-surface p-3 shadow-elevated"
+              className="ui-surface rounded-md border border-border bg-surface p-3 shadow-elevated"
               key={message.id}
             >
               <div className="flex gap-3">

@@ -152,7 +152,7 @@ export default function StudentsPage() {
         <div className="space-y-3">
           <StudentDirectory view={view} students={students} onOpen={handleOpenStudent}
             onPrefetch={handlePrefetchStudent} onActions={(id) => setSearchParams({ aluno: id, opcoes: '1' })} />
-          <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 ui-surface rounded-md border border-border bg-surface p-3 shadow-subtle sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               Pagina {page} de {totalPages}, {totalCount} aluno{totalCount === 1 ? '' : 's'}.
             </p>

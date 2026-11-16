@@ -10,7 +10,7 @@ export function SearchInput({ className, label, id, ...props }: SearchInputProps
   const inputId = id ?? props.name
 
   return (
-    <label className="relative block" htmlFor={inputId}>
+    <label className="relative block self-end" htmlFor={inputId}>
       <span className="sr-only">{label}</span>
       <Search
         className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"

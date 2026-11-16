@@ -86,7 +86,7 @@ export function GuardiansList({ guardians, onOpenGuardian, onPrefetchGuardian }:
       <div className="grid gap-3 md:hidden">
         {guardians.map((guardian) => (
           <article
-            className="rounded-md border border-border bg-surface p-4 shadow-subtle"
+            className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle"
             key={guardian.guardian_id}
             onMouseEnter={() => onPrefetchGuardian?.(guardian.guardian_id)}
           >

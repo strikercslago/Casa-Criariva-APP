@@ -1,3 +1,4 @@
+import { Settings as PageIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation } from 'react-router-dom'
@@ -42,9 +43,9 @@ export default function SettingsPage() {
 
   return (
     <div className="grid gap-5">
-      <PageHeader title="Configuracoes" description="Preferências, equipe e segurança da Casa Criativa." />
+      <PageHeader icon={PageIcon} title="Configuracoes" description="Preferências, equipe e segurança da Casa Criativa." />
 
-      <nav className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Configuracoes">
+      <nav className="settings-tabs grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Configuracoes">
         {visibleTabs.map((tab) => (
           <Link
             className={[
@@ -53,6 +54,7 @@ export default function SettingsPage() {
                 ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border bg-surface text-muted-foreground hover:bg-muted',
             ].join(' ')}
+            aria-current={activePath === tab.path ? 'page' : undefined}
             key={tab.path}
             to={tab.path}
           >
@@ -95,7 +97,7 @@ function GeneralSettings({ isOwner }: { isOwner: boolean }) {
 
   return (
     <section className="grid gap-5">
-      <div className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <div className="ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">Organizacao</h2>
@@ -198,7 +200,7 @@ function UsersSettings() {
 
   return (
     <section className="grid gap-5">
-      <div className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <div className="ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <h2 className="text-lg font-semibold">Adicionar usuario</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-[1fr_1fr_180px_auto]">
           <Input label="Nome" value={fullName} onChange={(event) => setFullName(event.target.value)} />
@@ -236,7 +238,7 @@ function UsersSettings() {
         ) : null}
       </div>
 
-      <div className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+      <div className="ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
         <h2 className="text-lg font-semibold">Usuarios</h2>
         {usersQuery.isLoading ? <RouteSkeleton /> : null}
         {usersQuery.error ? <ErrorState title="Nao foi possivel listar usuarios." /> : null}
@@ -380,7 +382,7 @@ function SecuritySettings() {
   const hasVerifiedTotp = Boolean(factorsQuery.data?.totp.length)
 
   return (
-    <section className="rounded-md border border-border bg-surface p-4 shadow-subtle">
+    <section className="ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">Autenticacao em duas etapas</h2>

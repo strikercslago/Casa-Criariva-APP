@@ -2,12 +2,24 @@
 
 ## Estado da entrega
 
-Implementação local; **não publicada nem conectada a uma conta Google real**.
-A flag `VITE_GOOGLE_CALENDAR_ENABLED` permanece desativada por padrão até configurar
-o backend. Nenhum evento real, dado escolar ou credencial de produção foi alterado.
+Em 16/11/2026, com autorização explícita, a migração exclusiva foi aplicada em transação
+no projeto Creative House e a Edge Function google-calendar foi publicada (versão 2,
+incluindo criação de compromissos por professores ativos).
+Os sete secrets estão cadastrados. A integração está habilitada somente no .env.local;
+a configuração padrão do frontend continua desativada.
+
+Validação remota: RLS nas três tabelas, sem SELECT para anon/authenticated; função ativa;
+CORS permite http://127.0.0.1:5173; chamadas sem credenciais retornam 401 (app) ou 403
+(webhook/manutenção). A conexão OAuth de uma conta Google foi confirmada no servidor.
+
+Na última verificação, ainda pendentes: seleção da agenda, configuração
+do Vault/cron, testes reais de sincronização e ativação no site publicado.
+Nenhum evento real foi criado nem registro escolar alterado nesta implantação.
 
 Modelo adotado: agenda institucional compartilhada. Owner/admin conectam e gerenciam;
-professores ativos apenas visualizam. A interface informa esse compartilhamento antes
+professores ativos visualizam e criam compromissos na mesma agenda. Edição, exclusão e
+gerenciamento da conexão permanecem restritos a owner/admin. Não há bloqueio automático
+de sobreposição de horários. A interface informa esse compartilhamento antes
 da conexão. A escolha de agenda pessoal por usuário exigiria outro modelo de dados.
 
 ## Arquitetura

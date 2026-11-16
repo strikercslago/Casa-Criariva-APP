@@ -15,7 +15,7 @@ type FinanceObligationListProps = {
 export function FinanceObligationList({ rows }: FinanceObligationListProps) {
   return (
     <div className="responsive-records grid gap-3">
-      <div className="records-table rounded-md border border-border bg-surface shadow-subtle">
+      <div className="records-table ui-surface rounded-md border border-border bg-surface shadow-subtle">
         <div className="grid grid-cols-[minmax(220px,1.4fr)_130px_130px_130px_130px_120px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Item</span>
           <span>Origem</span>
@@ -41,7 +41,7 @@ export function FinanceObligationList({ rows }: FinanceObligationListProps) {
 
       <div className="records-cards gap-3">
         {rows.map((row) => (
-          <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={row.item_id}>
+          <article className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle" key={row.item_id}>
             <ObligationTitle row={row} />
             <dl className="mt-4 record-values">
               <Summary label="Total" value={formatMoney(row.amount)} />

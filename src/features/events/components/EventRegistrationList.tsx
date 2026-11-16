@@ -23,7 +23,7 @@ type EventRegistrationListProps = {
 export function EventRegistrationList({ onCancel, onConfirm, onPay, registrations }: EventRegistrationListProps) {
   return (
     <div className="responsive-records grid gap-3">
-      <div className="hidden rounded-md border border-border bg-surface shadow-subtle xl:block">
+      <div className="hidden ui-surface rounded-md border border-border bg-surface shadow-subtle xl:block">
         <div className="grid grid-cols-[minmax(220px,1.2fr)_180px_130px_130px_130px_210px] gap-3 border-b border-border px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">
           <span>Participante</span>
           <span>Responsavel</span>
@@ -58,7 +58,7 @@ export function EventRegistrationList({ onCancel, onConfirm, onPay, registration
 
       <div className="grid gap-3 xl:hidden">
         {registrations.map((registration) => (
-          <article className="rounded-md border border-border bg-surface p-4 shadow-subtle" key={registration.registration_id}>
+          <article className="record-card ui-surface rounded-md border border-border bg-surface p-4 shadow-subtle" key={registration.registration_id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="break-words font-semibold text-foreground">{registration.participant_name}</h3>

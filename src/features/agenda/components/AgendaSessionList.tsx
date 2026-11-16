@@ -17,7 +17,7 @@ export function AgendaSessionList({ onOpenSession, onTakeAttendance, sessions, s
     <div className="grid gap-3">
       {sessions.map((session) => (
         <article
-          className="rounded-md border border-border border-l-4 border-l-primary bg-surface p-4 shadow-subtle transition-colors hover:bg-muted/40"
+          className="record-card ui-surface rounded-md border border-border border-l-4 border-l-primary bg-surface p-4 shadow-subtle transition-colors hover:bg-muted/40"
           key={session.session_id}
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(120px,auto)_1fr_minmax(190px,auto)_auto] lg:items-center">
