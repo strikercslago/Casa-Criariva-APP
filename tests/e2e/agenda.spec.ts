@@ -229,6 +229,7 @@ test('records agenda attendance in batch and syncs Student 360', async ({ page }
 
   await expect(page.getByRole('heading', { name: 'Menu Principal' })).toBeVisible()
   await page.goto('/agenda')
+  await page.getByRole('button', { name: 'Dia', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Agenda' })).toBeVisible()
   await expect(page.getByText('Frequencia pendente')).toBeVisible()
   await page.getByRole('button', { name: 'Fazer chamada' }).click()

@@ -9,6 +9,7 @@ import { PageHeader } from '@/shared/components/navigation/PageHeader'
 import { Button } from '@/shared/components/ui/Button'
 import { IconButton } from '@/shared/components/ui/IconButton'
 import { TabButton, Tabs } from '@/shared/components/ui/Tabs'
+import { AgendaMonthCalendar } from '@/features/agenda/components/AgendaMonthCalendar'
 import { AgendaSessionList } from '@/features/agenda/components/AgendaSessionList'
 import { AttendanceDrawer } from '@/features/agenda/components/AttendanceDrawer'
 import { useAgendaSessions } from '@/features/agenda/hooks/useAgenda'
@@ -18,26 +19,29 @@ import {
   formatAgendaRange,
   formatLongAgendaDate,
   getWeekRange,
+  getMonthRange,
+  moveMonth,
+  formatAgendaMonth,
   parseIsoDate,
   toIsoDate,
 } from '@/features/agenda/utils/agendaDates'
 
-type AgendaViewMode = 'day' | 'week'
+type AgendaViewMode = 'month' | 'day' | 'week'
 
 export default function ClassAgendaPage() {
   const navigate = useNavigate()
   const today = useMemo(() => toIsoDate(new Date()), [])
   const [selectedDate, setSelectedDate] = useState(today)
-  const [viewMode, setViewMode] = useState<AgendaViewMode>('day')
+  const [viewMode, setViewMode] = useState<AgendaViewMode>('month')
   const [selectedSession, setSelectedSession] = useState<AgendaSession | null>(null)
-  const range = viewMode === 'day' ? { endDate: selectedDate, startDate: selectedDate } : getWeekRange(selectedDate)
+  const range = viewMode === 'month' ? getMonthRange(selectedDate) : viewMode === 'day' ? { endDate: selectedDate, startDate: selectedDate } : getWeekRange(selectedDate)
   const sessionsQuery = useAgendaSessions(range)
   const sessions = sessionsQuery.data ?? []
   const pendingCount = sessions.filter((session) => session.attendance_state === 'pending').length
   const recordedCount = sessions.filter((session) => session.attendance_state === 'recorded').length
 
   function moveDate(direction: -1 | 1) {
-    setSelectedDate((current) => addDays(current, viewMode === 'day' ? direction : direction * 7))
+    setSelectedDate((current) => viewMode === 'month' ? moveMonth(current, direction) : addDays(current, viewMode === 'day' ? direction : direction * 7))
   }
 
   return (
@@ -54,7 +58,7 @@ export default function ClassAgendaPage() {
             Atualizar
           </Button>
         }
-        description="Seu dia na Casa Criativa, aula por aula."
+        description="Visualize o mês e acompanhe as aulas agendadas em cada dia."
         title="Agenda"
       />
 
@@ -63,10 +67,10 @@ export default function ClassAgendaPage() {
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <CalendarDays className="h-4 w-4" aria-hidden />
-              {viewMode === 'day' ? (selectedDate === today ? 'Sua agenda de hoje' : 'Agenda do dia') : 'Sua semana'}
+              {viewMode === 'month' ? 'Seu mês na Casa Criativa' : viewMode === 'day' ? (selectedDate === today ? 'Sua agenda de hoje' : 'Agenda do dia') : 'Sua semana'}
             </p>
             <h2 className="mt-1 text-base font-semibold text-foreground">
-              {viewMode === 'day' ? formatLongAgendaDate(selectedDate) : formatAgendaRange(range.startDate, range.endDate)}
+              {viewMode === 'month' ? formatAgendaMonth(selectedDate) : viewMode === 'day' ? formatLongAgendaDate(selectedDate) : formatAgendaRange(range.startDate, range.endDate)}
             </h2>
           </div>
 
@@ -77,7 +81,7 @@ export default function ClassAgendaPage() {
           <IconButton label="Proximo periodo" onClick={() => moveDate(1)}><ChevronRight className="h-4 w-4" aria-hidden /></IconButton>
         </div>
 
-        <div className="grid grid-cols-7 gap-1" aria-label="Dias da semana">
+        {viewMode !== 'month' ? <div className="grid grid-cols-7 gap-1" aria-label="Dias da semana">
           {Array.from({ length: 7 }, (_, index) => {
             const date = addDays(getWeekRange(selectedDate).startDate, index)
             const active = date === selectedDate
@@ -89,10 +93,10 @@ export default function ClassAgendaPage() {
               <span className={`h-1 w-1 rounded-full ${date === today ? (active ? 'bg-white' : 'bg-primary') : 'bg-transparent'}`} />
             </button>
           })}
-        </div>
+        </div> : null}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button onClick={() => setSelectedDate(today)} variant="ghost">Hoje</Button>
-          <Tabs><TabButton isActive={viewMode === 'day'} onClick={() => setViewMode('day')}>Dia</TabButton><TabButton isActive={viewMode === 'week'} onClick={() => setViewMode('week')}>Semana</TabButton></Tabs>
+          <Tabs><TabButton isActive={viewMode === 'month'} onClick={() => setViewMode('month')}>Mês</TabButton><TabButton isActive={viewMode === 'day'} onClick={() => setViewMode('day')}>Dia</TabButton><TabButton isActive={viewMode === 'week'} onClick={() => setViewMode('week')}>Semana</TabButton></Tabs>
         </div>
 
         <dl className="compact-metrics" aria-busy={sessionsQuery.isFetching}>
@@ -119,7 +123,12 @@ export default function ClassAgendaPage() {
         />
       ) : null}
 
-      {!sessionsQuery.isError && !sessionsQuery.isPlaceholderData && sessions.length > 0 ? (
+      {viewMode === 'month' && !sessionsQuery.isLoading && !sessionsQuery.isError && !sessionsQuery.isPlaceholderData ? (
+        <AgendaMonthCalendar date={selectedDate} today={today} sessions={sessions} onOpenSession={setSelectedSession}
+          onSelectDay={(day) => { setSelectedDate(day); setViewMode('day') }} />
+      ) : null}
+
+      {viewMode !== 'month' && !sessionsQuery.isError && !sessionsQuery.isPlaceholderData && sessions.length > 0 ? (
         <AgendaSessionList
           onTakeAttendance={(session) => navigate(`/frequencia?session=${encodeURIComponent(session.session_id)}&date=${session.session_date}`)}
           onOpenSession={(sessionId) => {

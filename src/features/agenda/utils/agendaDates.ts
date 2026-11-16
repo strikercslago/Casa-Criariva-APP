@@ -41,6 +41,32 @@ export function getWeekRange(value: string) {
   return { endDate: toIsoDate(end), startDate: toIsoDate(start) }
 }
 
+export function getMonthRange(value: string) {
+  const date = parseIsoDate(value)
+  return {
+    startDate: toIsoDate(new Date(date.getFullYear(), date.getMonth(), 1)),
+    endDate: toIsoDate(new Date(date.getFullYear(), date.getMonth() + 1, 0)),
+  }
+}
+
+export function moveMonth(value: string, direction: number) {
+  const date = parseIsoDate(value)
+  return toIsoDate(new Date(date.getFullYear(), date.getMonth() + direction, 1))
+}
+
+export function getMonthDays(value: string) {
+  const month = getMonthRange(value)
+  const start = getWeekRange(month.startDate).startDate
+  const end = getWeekRange(month.endDate).endDate
+  const days: string[] = []
+  for (let date = start; date <= end; date = addDays(date, 1)) days.push(date)
+  return days
+}
+
+export function formatAgendaMonth(value: string) {
+  return createDateFormatter({ month: 'long', year: 'numeric' }).format(parseIsoDate(value))
+}
+
 export function formatLongAgendaDate(value: string) {
   return longDateFormatter.format(parseIsoDate(value))
 }

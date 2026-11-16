@@ -74,3 +74,28 @@ nav[aria-label='Navegacao principal'] a { border-radius: 16px; }
 @media print {
   .app-main, .ui-surface, .record-card, .metric-tile { background: white; box-shadow: none; }
 }
+
+/* Month view keeps all seven weekdays visible, including on narrow phones. */
+.agenda-month { overflow: hidden; border: 1px solid hsl(var(--border)); border-radius: 20px; background: white; box-shadow: var(--brand-shadow); }
+.agenda-month-weekdays, .agenda-month-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.agenda-month-weekdays { background: var(--pastel-purple); color: hsl(var(--primary)); font-size: 12px; font-weight: 700; text-align: center; }
+.agenda-month-weekdays span { padding: 12px 0; }
+.agenda-month-day { min-width: 0; min-height: 140px; padding: 6px; border-top: 1px solid hsl(var(--border)); border-right: 1px solid hsl(var(--border)); }
+.agenda-month-day:nth-child(7n) { border-right: 0; }
+.agenda-month-day[data-outside='true'] { background: #f8f6fa; color: hsl(var(--muted-foreground)); }
+.agenda-month-day[data-today='true'] { background: #faf3ff; }
+.agenda-month-date { display: flex; align-items: center; justify-content: center; width: 40px; min-height: 40px; margin-bottom: 4px; border-radius: 12px; font-weight: 650; }
+.agenda-month-date[aria-current='date'] { color: white; background: hsl(var(--primary)); }
+.agenda-month-events { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.agenda-month-event { display: flex; flex-direction: column; gap: 2px; width: 100%; min-height: 44px; padding: 6px; border-radius: 8px; background: #f0e4fa; color: #4b1d66; text-align: left; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.agenda-month-event[data-status='recorded'] { background: #e4f5ec; color: #146244; }
+.agenda-month-event[data-status='cancelled'] { background: #f5eeee; color: #734049; }
+.agenda-month-event:hover { outline: 1px solid currentColor; }
+.agenda-month-event-status { font-size: 10px; }
+@media (max-width: 639px) {
+  .agenda-month { border-radius: 14px; }
+  .agenda-month-day { min-height: 100px; padding: 2px; }
+  .agenda-month-date { width: 100%; min-height: 44px; font-size: 12px; }
+  .agenda-month-event { font-size: 10px; padding: 4px 2px; }
+  .agenda-month-event-status { display: none; }
+}
